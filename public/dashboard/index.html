@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" href="./img/favicon.svg" type="image/svg+xml">
+    <style>
+        .dashboard-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a73e8;
+        }
+        .recent-access {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success-badge {
+            background-color: #28a745;
+        }
+        .blocked-badge {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-4">
+        <h1 class="mb-4">Access Dashboard</h1>
+        
+        <!-- Stats Overview -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <h5>Total Access</h5>
+                    <div class="stat-number" id="totalAccess">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <h5>Successful Access</h5>
+                    <div class="stat-number text-success" id="successfulAccess">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <h5>Blocked Access</h5>
+                    <div class="stat-number text-danger" id="blockedAccess">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <h5>Block Rate</h5>
+                    <div class="stat-number text-warning" id="blockRate">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IP Lists -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <h5>Blocked IPs</h5>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>IP Address</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody id="blockedIPs"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <h5>Successful IPs</h5>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>IP Address</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody id="successfulIPs"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Access -->
+        <div class="dashboard-card mt-4">
+            <h5>Recent Access</h5>
+            <div class="recent-access">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>IP Address</th>
+                            <th>Path</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentAccess"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <h5>Hourly Access Traffic</h5>
+                    <canvas id="hourlyChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <h5>Daily Access Traffic</h5>
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let hourlyChart, dailyChart;
+
+        function updateDashboard() {
+            fetch('/api/dashboard-data')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('totalAccess').textContent = data.totalAccess;
+                    document.getElementById('successfulAccess').textContent = data.successfulAccess;
+                    document.getElementById('blockedAccess').textContent = data.blockedAccess;
+                    document.getElementById('blockRate').textContent = data.blockRate + '%';
+
+                    // Update Blocked IPs
+                    const blockedIPsHTML = data.blockedIPs
+                        .map(item => `<tr><td>${item.ip}</td><td>${item.count}</td></tr>`)
+                        .join('');
+                    document.getElementById('blockedIPs').innerHTML = blockedIPsHTML;
+
+                    // Update Successful IPs
+                    const successfulIPsHTML = data.successfulIPs
+                        .map(item => `<tr><td>${item.ip}</td><td>${item.count}</td></tr>`)
+                        .join('');
+                    document.getElementById('successfulIPs').innerHTML = successfulIPsHTML;
+
+                    // Update Recent Access
+                    const recentAccessHTML = data.lastAccesses
+                        .map(access => `
+                            <tr>
+                                <td>${new Date(access.timestamp).toLocaleString()}</td>
+                                <td>${access.ip}</td>
+                                <td>${access.path}</td>
+                                <td><span class="badge ${access.status === 'success' ? 'success-badge' : 'blocked-badge'}">${access.status}</span></td>
+                            </tr>
+                        `)
+                        .join('');
+                    document.getElementById('recentAccess').innerHTML = recentAccessHTML;
+                });
+        }
+
+        function updateCharts() {
+            fetch('/api/chart-data')
+                .then(response => response.json())
+                .then(data => {
+                    // Xử lý dữ liệu cho biểu đồ theo giờ
+                    const hourlyLabels = data.hourlyData.map(item => item.hour + ':00');
+                    const hourlyTotal = data.hourlyData.map(item => item.total);
+                    const hourlyBlocked = data.hourlyData.map(item => item.blocked);
+
+                    // Xử lý dữ liệu cho biểu đồ theo ngày
+                    const dailyLabels = data.dailyData.map(item => new Date(item.date).toLocaleDateString());
+                    const dailyTotal = data.dailyData.map(item => item.total);
+                    const dailyBlocked = data.dailyData.map(item => item.blocked);
+
+                    // Cập nhật hoặc tạo mới biểu đồ theo giờ
+                    if (hourlyChart) {
+                        hourlyChart.destroy();
+                    }
+                    hourlyChart = new Chart(document.getElementById('hourlyChart'), {
+                        type: 'line',
+                        data: {
+                            labels: hourlyLabels,
+                            datasets: [
+                                {
+                                    label: 'Total Access',
+                                    data: hourlyTotal,
+                                    borderColor: '#1a73e8',
+                                    tension: 0.1
+                                },
+                                {
+                                    label: 'Blocked Access',
+                                    data: hourlyBlocked,
+                                    borderColor: '#dc3545',
+                                    tension: 0.1
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+
+                    // Cập nhật hoặc tạo mới biểu đồ theo ngày
+                    if (dailyChart) {
+                        dailyChart.destroy();
+                    }
+                    dailyChart = new Chart(document.getElementById('dailyChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: dailyLabels,
+                            datasets: [
+                                {
+                                    label: 'Total Access',
+                                    data: dailyTotal,
+                                    backgroundColor: '#1a73e8'
+                                },
+                                {
+                                    label: 'Blocked Access',
+                                    data: dailyBlocked,
+                                    backgroundColor: '#dc3545'
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                });
+        }
+
+        // Cập nhật cả biểu đồ và dashboard
+        function updateAll() {
+            updateDashboard();
+            updateCharts();
+        }
+
+        // Update mỗi 5 giây
+        updateAll();
+        setInterval(updateAll, 5000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Processing Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" href="./img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./asset/style.css">
+
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Create File Migration MS365</h1>
+        </header>
+
+        <div class="card">
+            <textarea id="emailInput" rows="10" placeholder="Nhập email, mỗi email một dòng"></textarea>
+            <button onclick="processEmails()">Xử lý</button>
+        </div>
+
+        <div class="card">
+            <div class="tab">
+                <button class="tablinks active" onclick="openTab(event, 'tableView')">Dạng Bảng</button>
+                <button class="tablinks" onclick="openTab(event, 'textView')">Dạng Text</button>
+            </div>
+
+            <div id="tableView" class="tabcontent" style="display: block;">
+                <div class="advanced-settings">
+                    <select id="advancedOption" style="width: auto;">
+                        <option value="path">Path</option>
+                        <option value="password">Password</option>
+                    </select>
+                    <input type="text" id="advancedValue" placeholder="Nhập giá trị mới">
+                    <button onclick="applyAdvancedSettings()">Áp dụng</button>
+                </div>
+                <table id="dataTable">
+                    <tr>
+                        <th>STT</th>
+                        <th>Email</th>
+                        <th>Path</th>
+                        <th>Password</th>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="textView" class="tabcontent">
+                <textarea id="dataText" rows="10" readonly></textarea>
+            </div>
+
+            <button onclick="downloadTXT()">Tải File TXT</button>
+            <div id="statusMessage"></div>
+        </div>
+    </div>
+    <script src="./asset/script.js"></script>
+</body>
+</html>

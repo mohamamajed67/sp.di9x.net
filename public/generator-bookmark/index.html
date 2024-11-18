@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmarklet Generator Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./src/styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header card">
+            <h1>Bookmarklet Generator Pro</h1>
+            <p>Create powerful bookmarklets with a sleek, modern interface</p>
+        </div>
+
+        <div class="card">
+            <form id="bookmarkletForm">
+                <div class="form-group">
+                    <label for="bookmarkletName">Bookmarklet Name</label>
+                    <input type="text" id="bookmarkletName" placeholder="Enter a name for your bookmarklet" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="template">Choose Template</label>
+                    <select id="template" required>
+                        <option value="">Select a template</option>
+                        <option value="api">Form Call API</option>
+                        <option value="noapi">Form without API call</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="ticketType">Ticket Type</label>
+                    <input type="text" id="ticketType" placeholder="[SUPPORT] Hỗ trợ ban đầu Office 365" required>
+                    <!-- <select id="ticketType" required>
+                        <option value="">Select a ticket type</option>
+                        <option value="[SUPPORT] Hỗ trợ ban đầu Office 365">[SUPPORT] Hỗ trợ ban đầu Office 365</option>
+                    </select> -->
+                </div>
+
+                <div class="form-group">
+                    <label for="noteContent">Note Content</label>
+                    <input type="text" id="noteContent" placeholder="Hỗ trợ ban đầu Microsoft 365" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="htmlContent">HTML Content</label>
+                    <textarea id="htmlContent"
+                        placeholder="Enter your HTML content here. You can use placeholders like ${domain}, ${apiResult}, ${modifiedPhoneNumber}, ${timeString}, ${dateString}, ${email}"
+                        required></textarea>
+                </div>
+
+                <button type="submit">Generate Bookmarklet</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <div id="bookmarklet" class="result-section">
+                <h3>Generated Bookmarklet</h3>
+                <p>Drag this link to your bookmarks bar:</p>
+                <a href="#" id="bookmarkletLink" class="result-link" onclick="return false;">Your Bookmarklet</a>
+                <p>Or copy this encoded bookmarklet:</p>
+                <div class="code-area" id="encodedBookmarklet"></div>
+                <p>Original code:</p>
+                <div class="code-area" id="originalCode"></div>
+            </div>
+        </div>
+    </div>
+   <script src="./src/generator.js"></script>
+</body>
+
+</html>

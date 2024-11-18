@@ -1,0 +1,227 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Editor Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="icon" href="./src/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./src/styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>HTML Editor Pro</h1>
+        <div class="toolbar">
+            <div class="toolbar-group">
+                <button onclick="formatText('bold')" class="tooltip"><i class="fas fa-bold"></i><span
+                        class="tooltiptext">Đậm</span></button>
+                <button onclick="formatText('italic')" class="tooltip"><i class="fas fa-italic"></i><span
+                        class="tooltiptext">Nghiêng</span></button>
+                <button onclick="formatText('underline')" class="tooltip"><i class="fas fa-underline"></i><span
+                        class="tooltiptext">Gạch chân</span></button>
+                <button onclick="formatText('strikeThrough')" class="tooltip"><i class="fas fa-strikethrough"></i><span
+                        class="tooltiptext">Gạch ngang</span></button>
+            </div>
+            <div class="toolbar-group">
+                <button onclick="formatText('justifyLeft')" class="tooltip"><i class="fas fa-align-left"></i><span
+                        class="tooltiptext">Căn trái</span></button>
+                <button onclick="formatText('justifyCenter')" class="tooltip"><i class="fas fa-align-center"></i><span
+                        class="tooltiptext">Căn giữa</span></button>
+                <button onclick="formatText('justifyRight')" class="tooltip"><i class="fas fa-align-right"></i><span
+                        class="tooltiptext">Căn phải</span></button>
+                <button onclick="formatText('justifyFull')" class="tooltip"><i class="fas fa-align-justify"></i><span
+                        class="tooltiptext">Căn đều</span></button>
+            </div>
+            <div class="toolbar-group">
+                <button onclick="formatText('insertUnorderedList')" class="tooltip"><i class="fas fa-list-ul"></i><span
+                        class="tooltiptext">Danh sách không thứ tự</span></button>
+                <button onclick="formatText('insertOrderedList')" class="tooltip"><i class="fas fa-list-ol"></i><span
+                        class="tooltiptext">Danh sách có thứ tự</span></button>
+                <button onclick="formatText('indent')" class="tooltip"><i class="fas fa-indent"></i><span
+                        class="tooltiptext">Thụt lề</span></button>
+                <button onclick="formatText('outdent')" class="tooltip"><i class="fas fa-outdent"></i><span
+                        class="tooltiptext">Lùi lề</span></button>
+            </div>
+            <div class="toolbar-group">
+                <button onclick="insertLink()" class="tooltip"><i class="fas fa-link"></i><span class="tooltiptext">Chèn
+                        liên kết</span></button>
+                <button onclick="insertImage()" class="tooltip"><i class="fas fa-image"></i><span
+                        class="tooltiptext">Chèn hình ảnh</span></button>
+                <button onclick="insertTable()" class="tooltip"><i class="fas fa-table"></i><span
+                        class="tooltiptext">Chèn bảng</span></button>
+            </div>
+            <div class="toolbar-group">
+                <button onclick="undo()" class="tooltip"><i class="fas fa-undo"></i><span class="tooltiptext">Hoàn
+                        tác</span></button>
+                <button onclick="redo()" class="tooltip"><i class="fas fa-redo"></i><span class="tooltiptext">Làm
+                        lại</span></button>
+            </div>
+            <div class="toolbar-group">
+                <select onchange="formatText('fontName', this.value)" class="tooltip">
+                    <option value="">Font chữ</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Helvetica">Helvetica</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Courier">Courier</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Palatino">Palatino</option>
+                    <option value="Garamond">Garamond</option>
+                    <option value="Bookman">Bookman</option>
+                    <option value="Comic Sans MS">Comic Sans MS</option>
+                    <option value="Trebuchet MS">Trebuchet MS</option>
+                    <option value="Arial Black">Arial Black</option>
+                </select>
+                <select onchange="formatText('fontSize', this.value)" class="tooltip">
+                    <option value="">Cỡ chữ</option>
+                    <option value="1">Rất nhỏ</option>
+                    <option value="2">Nhỏ</option>
+                    <option value="3">Bình thường</option>
+                    <option value="4">Lớn</option>
+                    <option value="5">Rất lớn</option>
+                    <option value="6">Cực lớn</option>
+                    <option value="7">Siêu lớn</option>
+                </select>
+                <input type="color" onchange="formatText('foreColor', this.value)" class="tooltip" title="Màu chữ">
+            </div>
+            <div class="toolbar-group">
+                <button onclick="toggleFullScreen()" class="tooltip"><i class="fas fa-expand"></i><span
+                        class="tooltiptext">Toàn màn hình</span></button>
+                <button onclick="toggleDarkMode()" class="tooltip"><i class="fas fa-moon"></i><span
+                        class="tooltiptext">Chế độ tối</span></button>
+            </div>
+            <div class="toolbar-group">
+                <button onclick="saveContent()" class="tooltip"><i class="fas fa-save"></i><span
+                        class="tooltiptext">Lưu</span></button>
+                <button onclick="loadContent()" class="tooltip"><i class="fas fa-folder-open"></i><span
+                        class="tooltiptext">Tải</span></button>
+                <button onclick="exportHTML()" class="tooltip"><i class="fas fa-file-export"></i><span
+                        class="tooltiptext">Xuất HTML</span></button>
+            </div>
+            <div class="toolbar-group">
+                <button onclick="openSearchReplaceModal()" class="tooltip"><i class="fas fa-search"></i><span
+                        class="tooltiptext">Tìm và thay thế</span></button>
+            </div>
+            <div class="toolbar-group">
+                <button onclick="openInsertVariableModal()" class="tooltip"><i class="fas fa-code"></i><span
+                        class="tooltiptext">Chèn biến</span></button>
+                <button onclick="clearAll()" class="tooltip"><i class="fas fa-trash"></i><span class="tooltiptext">Clear
+                        All</span></button>
+            </div>
+        </div>
+        <div class="split-view">
+            <div id="editor" contenteditable="true"></div>
+            <div id="preview"></div>
+        </div>
+        <textarea id="html-output" oninput="updateFromHtmlOutput()"></textarea>
+        <div class="html-output-controls">
+            <button onclick="copyHtmlOutput()" class="secondary-button">Copy HTML</button>
+            <!-- <button onclick="clearAll()" class="secondary-button">Clear All</button> -->
+        </div>
+        <div class="status-bar">
+            Số từ: <span id="word-count">0</span> | Số ký tự: <span id="char-count">0</span>
+        </div>
+    </div>
+
+    <div id="search-replace-modal" class="modal">
+        <div class="modal-content">
+            <h2>Find and replace</h2>
+            <div class="form-group">
+                <label for="search-input">Find</label>
+                <input type="text" id="search-input" placeholder="Find...">
+            </div>
+            <div class="form-group">
+                <label for="replace-input">Replace with</label>
+                <input type="text" id="replace-input" placeholder="Replace...">
+            </div>
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" id="case-sensitive">
+                    Match case
+                </label>
+            </div>
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" id="whole-word">
+                    Whole words
+                </label>
+            </div>
+            <div class="button-group">
+                <button onclick="findNext()" class="primary-button">Find</button>
+                <button onclick="replaceNext()" class="secondary-button">Replace</button>
+                <button onclick="replaceAll()" class="secondary-button">Replace all</button>
+                <button onclick="findPrevious()" class="nav-button">Prev</button>
+                <button onclick="findNext()" class="nav-button">Next</button>
+            </div>
+            <div id="search-results"></div>
+            <span class="close" onclick="closeSearchReplaceModal()">&times;</span>
+        </div>
+    </div>
+    <div id="image-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Insert/edit image</h2>
+                <span class="close" onclick="closeImageModal()">&times;</span>
+            </div>
+            <div class="modal-tabs">
+                <button class="tab-button active" onclick="switchTab(event, 'general')">General</button>
+                <button class="tab-button" onclick="switchTab(event, 'advanced')">Advanced</button>
+            </div>
+            <div id="general" class="tab-content active">
+                <div class="form-group">
+                    <label for="image-url">Source</label>
+                    <input type="text" id="image-url" placeholder="https://">
+                </div>
+                <div class="form-group">
+                    <label for="image-description">Image description</label>
+                    <input type="text" id="image-description">
+                </div>
+                <div class="form-group">
+                    <label>Dimensions</label>
+                    <div class="dimensions-input">
+                        <input type="number" id="image-width" placeholder="Width">
+                        <span>x</span>
+                        <input type="number" id="image-height" placeholder="Height">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="constrain-proportions" checked>
+                            <span>Constrain proportions</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div id="advanced" class="tab-content">
+                <!-- Add advanced options here if needed -->
+            </div>
+            <div class="modal-footer">
+                <button onclick="insertCustomImage()" class="primary-button">Ok</button>
+                <button onclick="closeImageModal()" class="secondary-button">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div id="insert-variable-modal" class="modal">
+        <div class="modal-content">
+            <h2>Chèn biến</h2>
+            <div class="variable-list">
+                <button onclick="insertVariable('${domain}')">Domain</button>
+                <button onclick="insertVariable('${apiResult}')">API Result</button>
+                <button onclick="insertVariable('${phoneNumber}')">Phone Number</button>
+                <button onclick="insertVariable('${timeString}')">Time</button>
+                <button onclick="insertVariable('${dateString}')">Date</button>
+                <button onclick="insertVariable('${email}')">Email</button>
+                <button onclick="insertVariable('${serviceEmail}')">Service</button>
+                <button onclick="insertVariable('${maKhachHang}')">Customer ID</button>
+            </div>
+            <span class="close" onclick="closeInsertVariableModal()">&times;</span>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.0/split.min.js"></script>
+    <script src="./src/editor.js"></script>
+</body>
+
+</html>

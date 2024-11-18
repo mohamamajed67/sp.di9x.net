@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Di9x Tool</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            background-color: #000;
+        }
+        .container {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+        .content {
+            text-align: center;
+            z-index: 10;
+        }
+        h1 {
+            font-size: 4em;
+            color: #fff;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeIn 2s forwards, float 4s ease-in-out infinite;
+        }
+        p {
+            font-size: 1.5em;
+            color: #a0a0a0;
+            opacity: 0;
+            animation: fadeIn 2s 0.5s forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        #background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <canvas id="background"></canvas>
+        <div class="content">
+            <h1>Welcome to Di9x Tool</h1>
+            <p>Experience the future of innovation</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('background'), antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshPhongMaterial({
+            color: 0x00ffff,
+            specular: 0x00ffff,
+            shininess: 100,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.7
+        });
+
+        const cubes = [];
+        for (let i = 0; i < 200; i++) {
+            const cube = new THREE.Mesh(geometry, material);
+            cube.position.set(
+                Math.random() * 40 - 20,
+                Math.random() * 40 - 20,
+                Math.random() * 40 - 20
+            );
+            cube.rotation.set(
+                Math.random() * Math.PI,
+                Math.random() * Math.PI,
+                Math.random() * Math.PI
+            );
+            cube.scale.set(
+                Math.random() * 0.5 + 0.1,
+                Math.random() * 0.5 + 0.1,
+                Math.random() * 0.5 + 0.1
+            );
+            scene.add(cube);
+            cubes.push(cube);
+        }
+
+        const light1 = new THREE.PointLight(0x00ffff, 1, 100);
+        light1.position.set(10, 10, 10);
+        scene.add(light1);
+
+        const light2 = new THREE.PointLight(0xff00ff, 1, 100);
+        light2.position.set(-10, -10, -10);
+        scene.add(light2);
+
+        camera.position.z = 5;
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            cubes.forEach(cube => {
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+            });
+
+            camera.position.x = Math.sin(Date.now() * 0.0005) * 5;
+            camera.position.y = Math.cos(Date.now() * 0.0005) * 5;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Di9x Tool - Ultimate Intro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/svgjs/3.1.2/svg.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #webgl {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            mix-blend-mode: screen;
+        }
+
+        .content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            text-align: center;
+            color: #fff;
+            width: 100%;
+        }
+
+        .glitch-title {
+            font-size: 5em;
+            font-weight: bold;
+            text-transform: uppercase;
+            position: relative;
+            text-shadow: 
+                0.05em 0 0 rgba(255,0,0,.75),
+                -0.025em -0.05em 0 rgba(0,255,0,.75),
+                0.025em 0.05em 0 rgba(0,0,255,.75);
+            animation: glitch 500ms infinite;
+        }
+
+        .subtitle {
+            font-size: 2em;
+            margin-top: 1em;
+            opacity: 0;
+            background: linear-gradient(45deg, #ff0066, #ff00ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .loading-bar {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            z-index: 4;
+        }
+
+        .loading-progress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff0066, #ff00ff);
+            transition: width 0.5s ease;
+        }
+
+        @keyframes glitch {
+            0% {
+                text-shadow: 
+                    0.05em 0 0 rgba(255,0,0,.75),
+                    -0.05em -0.025em 0 rgba(0,255,0,.75),
+                    0.025em 0.05em 0 rgba(0,0,255,.75);
+            }
+            14% {
+                text-shadow: 
+                    0.05em 0 0 rgba(255,0,0,.75),
+                    -0.05em -0.025em 0 rgba(0,255,0,.75),
+                    0.025em 0.05em 0 rgba(0,0,255,.75);
+            }
+            15% {
+                text-shadow: 
+                    -0.05em -0.025em 0 rgba(255,0,0,.75),
+                    0.025em 0.025em 0 rgba(0,255,0,.75),
+                    -0.05em -0.05em 0 rgba(0,0,255,.75);
+            }
+            49% {
+                text-shadow: 
+                    -0.05em -0.025em 0 rgba(255,0,0,.75),
+                    0.025em 0.025em 0 rgba(0,255,0,.75),
+                    -0.05em -0.05em 0 rgba(0,0,255,.75);
+            }
+            50% {
+                text-shadow: 
+                    0.025em 0.05em 0 rgba(255,0,0,.75),
+                    0.05em 0 0 rgba(0,255,0,.75),
+                    0 -0.05em 0 rgba(0,0,255,.75);
+            }
+            99% {
+                text-shadow: 
+                    0.025em 0.05em 0 rgba(255,0,0,.75),
+                    0.05em 0 0 rgba(0,255,0,.75),
+                    0 -0.05em 0 rgba(0,0,255,.75);
+            }
+            100% {
+                text-shadow: 
+                    -0.025em 0 0 rgba(255,0,0,.75),
+                    -0.025em -0.025em 0 rgba(0,255,0,.75),
+                    -0.025em -0.05em 0 rgba(0,0,255,.75);
+            }
+        }
+
+        .fluid-container {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="fluid-container"></div>
+    <div id="particles-js"></div>
+    <canvas id="webgl"></canvas>
+    <div class="content">
+        <h1 class="glitch-title">Welcome to Di9x Tool</h1>
+        <div class="subtitle">Experience the Future</div>
+    </div>
+    <div class="loading-bar">
+        <div class="loading-progress"></div>
+    </div>
+
+    <script>
+        // Particles.js Configuration
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 100, density: { enable: true, value_area: 800 } },
+                color: { value: "#ffffff" },
+                shape: {
+                    type: "circle",
+                    stroke: { width: 0, color: "#000000" },
+                    polygon: { nb_sides: 5 }
+                },
+                opacity: {
+                    value: 0.5,
+                    random: true,
+                    anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    anim: { enable: true, speed: 40, size_min: 0.1, sync: false }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#ffffff",
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 6,
+                    direction: "none",
+                    random: false,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false,
+                    attract: { enable: false, rotateX: 600, rotateY: 1200 }
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "repulse" },
+                    onclick: { enable: true, mode: "push" },
+                    resize: true
+                },
+                modes: {
+                    grab: { distance: 400, line_linked: { opacity: 1 } },
+                    bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 },
+                    repulse: { distance: 200, duration: 0.4 },
+                    push: { particles_nb: 4 },
+                    remove: { particles_nb: 2 }
+                }
+            },
+            retina_detect: true
+        });
+
+        // Three.js Scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.querySelector('#webgl'),
+            alpha: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        // Create animated geometry
+        const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
+        const material = new THREE.MeshNormalMaterial();
+        const torusKnot = new THREE.Mesh(geometry, material);
+        scene.add(torusKnot);
+
+        camera.position.z = 30;
+
+        // Animation
+        const animate = () => {
+            requestAnimationFrame(animate);
+            torusKnot.rotation.x += 0.01;
+            torusKnot.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        };
+        animate();
+
+        // GSAP Animations
+        const tl = gsap.timeline();
+
+        tl.to('.loading-progress', {
+            width: '100%',
+            duration: 2,
+            ease: 'power2.inOut'
+        })
+        .to('.loading-bar', {
+            opacity: 0,
+            duration: 0.5,
+            delay: 0.5
+        })
+        .from('.glitch-title', {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            ease: 'power4.out'
+        })
+        .to('.subtitle', {
+            opacity: 1,
+            duration: 1,
+            ease: 'power2.inOut'
+        });
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // WebGL Fluid Simulation
+        class FluidSimulation {
+            constructor() {
+                this.canvas = document.createElement('canvas');
+                this.canvas.style.position = 'absolute';
+                this.canvas.style.top = '0';
+                this.canvas.style.left = '0';
+                this.canvas.style.zIndex = '0';
+                document.querySelector('.fluid-container').appendChild(this.canvas);
+                
+                this.ctx = this.canvas.getContext('2d');
+                this.resize();
+
+                this.lastTime = Date.now();
+                this.particles = [];
+                this.numberOfParticles = 100;
+                this.createParticles();
+                this.animate();
+            }
+
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+
+            createParticles() {
+                for (let i = 0; i < this.numberOfParticles; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        speed: 2 + Math.random() * 2,
+                        angle: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+
+            animate() {
+                const currentTime = Date.now();
+                const deltaTime = (currentTime - this.lastTime) / 1000;
+                this.lastTime = currentTime;
+
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.particles.forEach(particle => {
+                    particle.x += Math.cos(particle.angle) * particle.speed;
+                    particle.y += Math.sin(particle.angle) * particle.speed;
+
+                    if (particle.x < 0) particle.x = this.canvas.width;
+                    if (particle.x > this.canvas.width) particle.x = 0;
+                    if (particle.y < 0) particle.y = this.canvas.height;
+                    if (particle.y > this.canvas.height) particle.y = 0;
+
+                    particle.angle += (Math.random() - 0.5) * 0.2;
+
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, 1, 0, Math.PI * 2);
+                    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    this.ctx.fill();
+                });
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Initialize fluid simulation
+        new FluidSimulation();
+    </script>
+</body>
+</html>
+</html>

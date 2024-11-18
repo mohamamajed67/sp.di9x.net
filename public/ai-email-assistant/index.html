@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Email | Di9x</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="./AI-email-assistant/asset/logo.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./AI-email-assistant/asset/style.css">
+</head>
+
+<body>
+    <div class="background-animation">
+        <div class="gradient-sphere sphere-1"></div>
+        <div class="gradient-sphere sphere-2"></div>
+        <div class="gradient-sphere sphere-3"></div>
+    </div>
+
+    <div class="container">
+        <div class="theme-toggle">
+            <i class="fas fa-adjust"></i>
+        </div>
+
+        <div class="header">
+            <h1>AI Email Assistant Pro</h1>
+            <div class="subtitle">Nâng tầm giao tiếp email chuyên nghiệp</div>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card active" data-style="professional">
+                <i class="fas fa-briefcase"></i>
+                <h3>Chuyên nghiệp</h3>
+            </div>
+            <div class="feature-card" data-style="friendly">
+                <i class="fas fa-heart"></i>
+                <h3>Thân thiện</h3>
+            </div>
+            <div class="feature-card" data-style="formal">
+                <i class="fas fa-crown"></i>
+                <h3>Trang trọng</h3>
+            </div>
+            <div class="feature-card" data-style="creative">
+                <i class="fas fa-lightbulb"></i>
+                <h3>Dễ hiểu</h3>
+            </div>
+        </div>
+
+        <div class="workspace">
+            <div class="input-container">
+                <div class="email-container">
+                    <div class="email-header">
+                        <div class="email-dot"></div>
+                        <div class="email-dot"></div>
+                        <div class="email-dot"></div>
+                    </div>
+                    <textarea id="input-email" placeholder="Soạn email của bạn tại đây..."></textarea>
+                    <div class="action-buttons">
+                        <button class="action-btn">
+                            <i class="fas fa-eraser"></i>
+                            Xóa
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-copy"></i>
+                            Sao chép
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="output-container">
+                <div class="email-container">
+                    <div class="email-header">
+                        <div class="email-dot"></div>
+                        <div class="email-dot"></div>
+                        <div class="email-dot"></div>
+                    </div>
+                    <textarea id="output" readonly placeholder="Email được tối ưu sẽ xuất hiện ở đây..."></textarea>
+                    <div class="action-buttons">
+                        <button class="action-btn">
+                            <i class="fas fa-copy"></i>
+                            Sao chép
+                        </button>
+                        <!-- <button class="action-btn">
+                            <i class="fas fa-download"></i>
+                            Tải xuống
+                        </button> -->
+                        <button class="action-btn fullscreen-btn">
+                            <i class="fas fa-expand"></i>
+                            Xem full
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button class="main-btn" onclick="improveEmail()">
+                <i class="fas fa-wand-magic-sparkles"></i>
+                <span>Tối Ưu Email</span>
+            </button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="loading-wave">
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="loading-text">Đang tối ưu...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fullscreen-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nội dung email</h3>
+                <button class="close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <textarea id="fullscreen-output" readonly></textarea>
+        </div>
+    </div>
+</body>
+<script src="./AI-email-assistant/asset/script.js"></script>
+
+</html>

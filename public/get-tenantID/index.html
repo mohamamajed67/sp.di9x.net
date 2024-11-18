@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain ID Retrieval - Enterprise Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="icon" href="./src/favicon.svg" type="image/svg+xml">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .panel {
+            background: #2d2d2d;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .panel:hover {
+            transform: translateY(-5px);
+        }
+
+        .panel h2 {
+            color: #fff;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel h2 .material-icons {
+            color: #4CAF50;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            background: #3d3d3d;
+            border: 2px solid #4d4d4d;
+            border-radius: 10px;
+            padding: 1rem;
+            color: #fff;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .button-container {
+            margin-top: 1rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .progress-container {
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #3d3d3d;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #43a047 0%, #2e7d32 100%);
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255,255,255,0.2) 50%,
+                transparent 100%
+            );
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .result-item {
+            background: #3d3d3d;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-item .domain {
+            color: #90caf9;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .result-item .success {
+            color: #81c784;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .result-item .error {
+            color: #e57373;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #summary {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #3d3d3d;
+            border-radius: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        #summary h3 {
+            color: #90caf9;
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background: #4d4d4d;
+            border-radius: 5px;
+        }
+
+        .results-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2d2d2d;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4d4d4d;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5d5d5d;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1400px) {
+            .container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .txt-results {
+            height: 400px;
+            font-family: 'Roboto Mono', monospace;
+            white-space: pre;
+        }
+
+        /* Thêm styles cho tabs */
+        .tabs {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+
+        .tab {
+            padding: 0.5rem 1rem;
+            background: #3d3d3d;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tab.active {
+            background: #4CAF50;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .container {
+            grid-template-columns: 1fr 1fr; /* Chỉ hiển thị 2 cột */
+        }
+
+        .stat span.clickable {
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .stat span.clickable:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .result-item {
+            transition: opacity 0.3s;
+        }
+
+        .result-item.hidden {
+            display: none;
+        }
+
+        /* Thêm style cho filter indicator */
+        .filter-indicator {
+            background: #4d4d4d;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .clear-filter {
+            cursor: pointer;
+            color: #e57373;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>DOMAIN ID RETRIEVAL SYSTEM</h1>
+    </div>
+    
+    <div class="container">
+        <div class="panel">
+            <h2>
+                <span class="material-icons">input</span>
+                Input Domains
+            </h2>
+            <textarea id="inputDomains" placeholder="Enter domains (one per line):&#10;example1.com&#10;example2.com&#10;example3.com"></textarea>
+            <div class="button-container">
+                <button onclick="processDomains()">
+                    <span class="material-icons">play_arrow</span>
+                    Process Domains
+                </button>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>
+                <span class="material-icons">analytics</span>
+                Results
+            </h2>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('detailed')">
+                    <span class="material-icons">list</span>
+                    Detailed View
+                </button>
+                <button class="tab" onclick="switchTab('txt')">
+                    <span class="material-icons">text_snippet</span>
+                    TXT Format
+                </button>
+            </div>
+
+            <div id="detailedView" class="tab-content active">
+                <div class="results-container">
+                    <div id="results"></div>
+                    <div id="summary"></div>
+                </div>
+            </div>
+
+            <div id="txtView" class="tab-content">
+                <textarea id="txtResults" readonly class="txt-results"></textarea>
+                <div class="button-container">
+                    <button onclick="copyToClipboard()">
+                        <span class="material-icons">content_copy</span>
+                        Copy to Clipboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentFilter = null;
+
+        async function processDomains() {
+            clearFilter();
+            const inputText = document.getElementById('inputDomains').value;
+            const domains = inputText.split('\n').filter(domain => domain.trim());
+            const resultsDiv = document.getElementById('results');
+            const progressFill = document.getElementById('progressFill');
+            const summaryDiv = document.getElementById('summary');
+            const txtResults = document.getElementById('txtResults');
+            
+            resultsDiv.innerHTML = '';
+            txtResults.value = '';
+            let successful = 0;
+            let failed = 0;
+            let txtOutput = '';
+
+            for (let i = 0; i < domains.length; i++) {
+                const domain = domains[i].trim();
+                if (!domain) continue;
+
+                const progress = ((i + 1) / domains.length) * 100;
+                progressFill.style.width = `${progress}%`;
+
+                try {
+                    const response = await fetch('/api/getDomainId', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ domain })
+                    });
+                    const data = await response.json();
+
+                    const resultHtml = `
+                        <div class="result-item">
+                            <div class="domain">
+                                <span class="material-icons">domain</span>
+                                ${domain}
+                            </div>
+                            ${data.success 
+                                ? `<div class="success">
+                                    <span class="material-icons">check_circle</span>
+                                    ID: ${data.id}
+                                   </div>`
+                                : `<div class="error">
+                                    <span class="material-icons">error</span>
+                                    Error: ${data.error}
+                                    ${data.details ? `<br>Status: ${data.details.status} - ${data.details.statusText}` : ''}
+                                   </div>`}
+                        </div>
+                    `;
+                    resultsDiv.innerHTML += resultHtml;
+
+                    if (data.success) {
+                        txtOutput += `${domain},${data.id}\n`;
+                    }
+
+                    if (data.success) successful++;
+                    else failed++;
+                } catch (error) {
+                    resultsDiv.innerHTML += `
+                        <div class="result-item">
+                            <div class="domain">
+                                <span class="material-icons">domain</span>
+                                ${domain}
+                            </div>
+                            <div class="error">
+                                <span class="material-icons">error</span>
+                                ${error.message}
+                            </div>
+                        </div>
+                    `;
+                    failed++;
+                }
+            }
+            
+            txtResults.value = txtOutput.trim();
+
+            summaryDiv.innerHTML = `
+                <h3>Summary Report</h3>
+                <div class="stat">
+                    <span>Total Processed:</span>
+                    <span>${domains.length}</span>
+                </div>
+                <div class="stat">
+                    <span>Successfully Retrieved:</span>
+                    <span style="color: #81c784" onclick="filterResults('success')" class="clickable">${successful}</span>
+                </div>
+                <div class="stat">
+                    <span>Failed:</span>
+                    <span style="color: #e57373" onclick="filterResults('failed')" class="clickable">${failed}</span>
+                </div>
+            `;
+        }
+
+        function copyToClipboard() {
+            const txtResults = document.getElementById('txtResults');
+            txtResults.select();
+            document.execCommand('copy');
+            
+            const button = document.querySelector('.panel:last-child button');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span class="material-icons">check</span>Copied!';
+            setTimeout(() => {
+                button.innerHTML = originalText;
+            }, 2000);
+        }
+
+        // Thêm hàm chuyển đổi tab
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
+
+            // Update tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName === 'txt' ? 'txtView' : 'detailedView').classList.add('active');
+        }
+
+        function filterResults(type) {
+            const resultsContainer = document.getElementById('results');
+            const resultItems = resultsContainer.getElementsByClassName('result-item');
+            
+            // Remove existing filter indicator
+            const existingIndicator = document.querySelector('.filter-indicator');
+            if (existingIndicator) {
+                existingIndicator.remove();
+            }
+
+            // Toggle filter if clicking the same type
+            if (currentFilter === type) {
+                clearFilter();
+                return;
+            }
+
+            currentFilter = type;
+
+            // Add filter indicator
+            const filterIndicator = document.createElement('div');
+            filterIndicator.className = 'filter-indicator';
+            filterIndicator.innerHTML = `
+                <span>Showing ${type === 'failed' ? 'Failed' : 'Successful'} results</span>
+                <span class="clear-filter" onclick="clearFilter()">
+                    <span class="material-icons">close</span>
+                    Clear filter
+                </span>
+            `;
+            resultsContainer.insertBefore(filterIndicator, resultsContainer.firstChild);
+
+            // Filter results
+            Array.from(resultItems).forEach(item => {
+                if (type === 'failed') {
+                    item.classList.toggle('hidden', !item.querySelector('.error'));
+                } else {
+                    item.classList.toggle('hidden', !item.querySelector('.success'));
+                }
+            });
+        }
+
+        function clearFilter() {
+            currentFilter = null;
+            const resultsContainer = document.getElementById('results');
+            const resultItems = resultsContainer.getElementsByClassName('result-item');
+            
+            // Xóa filter indicator
+            const filterIndicator = document.querySelector('.filter-indicator');
+            if (filterIndicator) {
+                filterIndicator.remove();
+            }
+
+            // Hiện tất cả kết quả
+            Array.from(resultItems).forEach(item => {
+                item.classList.remove('hidden');
+            });
+        }
+    </script>
+</body>
+</html>

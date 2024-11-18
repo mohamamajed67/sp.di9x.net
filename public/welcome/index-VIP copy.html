@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Di9x Tool - Ultimate Experience</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.5.2/browser/pixi.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        #webgl, #pixi-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #webgl {
+            z-index: 1;
+        }
+
+        #pixi-container {
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            text-align: center;
+            color: #fff;
+            width: 100%;
+        }
+
+        .glitch-title {
+            font-size: 5em;
+            font-weight: bold;
+            text-transform: uppercase;
+            position: relative;
+            animation: glitch 500ms infinite;
+        }
+
+        .subtitle {
+            font-size: 2em;
+            margin-top: 1em;
+            opacity: 0;
+            background: linear-gradient(45deg, #ff0066, #ff00ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes glitch {
+            0% {
+                text-shadow: 
+                    0.05em 0 0 rgba(255,0,0,.75),
+                    -0.05em -0.025em 0 rgba(0,255,0,.75),
+                    0.025em 0.05em 0 rgba(0,0,255,.75);
+            }
+            14% {
+                text-shadow: 
+                    0.05em 0 0 rgba(255,0,0,.75),
+                    -0.05em -0.025em 0 rgba(0,255,0,.75),
+                    0.025em 0.05em 0 rgba(0,0,255,.75);
+            }
+            15% {
+                text-shadow: 
+                    -0.05em -0.025em 0 rgba(255,0,0,.75),
+                    0.025em 0.025em 0 rgba(0,255,0,.75),
+                    -0.05em -0.05em 0 rgba(0,0,255,.75);
+            }
+            49% {
+                text-shadow: 
+                    -0.05em -0.025em 0 rgba(255,0,0,.75),
+                    0.025em 0.025em 0 rgba(0,255,0,.75),
+                    -0.05em -0.05em 0 rgba(0,0,255,.75);
+            }
+            50% {
+                text-shadow: 
+                    0.025em 0.05em 0 rgba(255,0,0,.75),
+                    0.05em 0 0 rgba(0,255,0,.75),
+                    0 -0.05em 0 rgba(0,0,255,.75);
+            }
+            99% {
+                text-shadow: 
+                    0.025em 0.05em 0 rgba(255,0,0,.75),
+                    0.05em 0 0 rgba(0,255,0,.75),
+                    0 -0.05em 0 rgba(0,0,255,.75);
+            }
+            100% {
+                text-shadow: 
+                    -0.025em 0 0 rgba(255,0,0,.75),
+                    -0.025em -0.025em 0 rgba(0,255,0,.75),
+                    -0.025em -0.05em 0 rgba(0,0,255,.75);
+            }
+        }
+
+        #matter-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 4;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="webgl"></canvas>
+    <div id="pixi-container"></div>
+    <div class="content">
+        <h1 class="glitch-title">Di9x Tool Ultimate</h1>
+        <div class="subtitle">Beyond Reality</div>
+    </div>
+    <div id="matter-container"></div>
+
+    <script>
+        // Three.js Scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#webgl'), alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        // Create animated geometry
+        const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                time: { value: 0 }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform float time;
+                varying vec2 vUv;
+                void main() {
+                    vec3 color = vec3(sin(vUv.x * 10.0 + time), cos(vUv.y * 10.0 - time), sin(time));
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `
+        });
+        const torusKnot = new THREE.Mesh(geometry, material);
+        scene.add(torusKnot);
+
+        camera.position.z = 30;
+
+        // Animation
+        const clock = new THREE.Clock();
+        const animate = () => {
+            requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+            material.uniforms.time.value = elapsedTime;
+            torusKnot.rotation.x = elapsedTime * 0.5;
+            torusKnot.rotation.y = elapsedTime * 0.2;
+            renderer.render(scene, camera);
+        };
+        animate();
+
+        // PIXI.js Particle System
+        const app = new PIXI.Application({
+            width: window.innerWidth,
+            height: window.innerHeight,
+            backgroundColor: 0x000000,
+            resolution: window.devicePixelRatio || 1,
+            transparent: true,
+        });
+        document.getElementById('pixi-container').appendChild(app.view);
+
+        const particleContainer = new PIXI.ParticleContainer(10000, {
+            scale: true,
+            position: true,
+            rotation: true,
+            uvs: true,
+            alpha: true,
+        });
+        app.stage.addChild(particleContainer);
+
+        const particles = [];
+        const particleTexture = PIXI.Texture.from('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==');
+
+        for (let i = 0; i < 10000; i++) {
+            const particle = new PIXI.Sprite(particleTexture);
+            particle.x = Math.random() * app.screen.width;
+            particle.y = Math.random() * app.screen.height;
+            particle.tint = Math.random() * 0xFFFFFF;
+            particle.alpha = 0.5;
+            particle.scale.set(0.5 + Math.random() * 0.5);
+            particle.vx = Math.random() - 0.5;
+            particle.vy = Math.random() - 0.5;
+            particleContainer.addChild(particle);
+            particles.push(particle);
+        }
+
+        app.ticker.add(() => {
+            for (let i = 0; i < particles.length; i++) {
+                const particle = particles[i];
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                if (particle.x < 0 || particle.x > app.screen.width) {
+                    particle.vx *= -1;
+                }
+                if (particle.y < 0 || particle.y > app.screen.height) {
+                    particle.vy *= -1;
+                }
+            }
+        });
+
+        // Matter.js Physics
+        const { Engine, Render, World, Bodies, Composite } = Matter;
+
+        const engine = Engine.create();
+        const render = Render.create({
+            element: document.getElementById('matter-container'),
+            engine: engine,
+            options: {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                wireframes: false,
+                background: 'transparent'
+            }
+        });
+
+        const ground = Bodies.rectangle(window.innerWidth / 2, window.innerHeight + 50, window.innerWidth, 100, { isStatic: true });
+        const leftWall = Bodies.rectangle(-50, window.innerHeight / 2, 100, window.innerHeight, { isStatic: true });
+        const rightWall = Bodies.rectangle(window.innerWidth + 50, window.innerHeight / 2, 100, window.innerHeight, { isStatic: true });
+
+        Composite.add(engine.world, [ground, leftWall, rightWall]);
+
+        Engine.run(engine);
+        Render.run(render);
+
+        // Create falling objects on click
+        document.addEventListener('click', (event) => {
+            const size = Math.random() * 50 + 10;
+            const shape = Math.random() > 0.5 ? Bodies.circle(event.clientX, event.clientY, size / 2) : Bodies.rectangle(event.clientX, event.clientY, size, size);
+            shape.render.fillStyle = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.8)`;
+            Composite.add(engine.world, shape);
+        });
+
+        // GSAP Animations
+        const tl = gsap.timeline();
+
+        tl.from('.glitch-title', {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            ease: 'power4.out'
+        })
+        .to('.subtitle', {
+            opacity: 1,
+            duration: 1,
+            ease: 'power2.inOut'
+        });
+
+        // Howler.js Audio
+        const sound = new Howl({
+            src: ['https://assets.codepen.io/21542/howler-demo-bg-music.mp3'],
+            loop: true,
+            volume: 0.5
+        });
+
+        // Start audio on user interaction
+        document.addEventListener('click', () => {
+            sound.play();
+        }, { once: true });
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            app.renderer.resize(window.innerWidth, window.innerHeight);
+            Render.setPixelRatio(render, window.devicePixelRatio);
+            Render.setSize(render, window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

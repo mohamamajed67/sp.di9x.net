@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Di9x - Redefining Digital Boundaries with cutting-edge AI, cybersecurity, and cloud solutions.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Di9x - Future Innovation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            overflow: hidden;
+            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .container {
+            height: 100vh;
+            background: #000;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .cyber-grid {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background:
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px) 0 0 / 50px 50px,
+                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px) 0 0 / 50px 50px;
+            transform: rotateX(60deg) translate(-25%, -25%);
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: rotateX(60deg) translate(-25%, -25%);
+            }
+
+            100% {
+                transform: rotateX(60deg) translate(-25%, -75%);
+            }
+        }
+
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 8em;
+            font-weight: 900;
+            color: transparent;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            opacity: 0;
+            animation: fadeInScale 1s ease forwards;
+        }
+
+        .tagline {
+            font-size: 1.5em;
+            color: #fff;
+            margin: 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            opacity: 0;
+            animation: fadeInScale 1s ease forwards 0.5s;
+        }
+
+        .enter-portal {
+            position: relative;
+            padding: 20px 60px;
+            margin-top: 40px;
+            font-size: 1.2em;
+            background: transparent;
+            border: none;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            opacity: 0;
+            animation: fadeInScale 1s ease forwards 1s;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border-radius: 25px;
+        }
+
+        .enter-portal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            opacity: 0.5;
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .enter-portal:hover::before {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .floating-element {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            animation: float 10s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(100px, -100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .hologram {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border: 2px solid cyan;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: hologramRotate 10s linear infinite;
+            opacity: 0.3;
+        }
+
+        .hologram::before,
+        .hologram::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid cyan;
+            animation: hologramPulse 2s ease-out infinite;
+        }
+
+        @keyframes hologramRotate {
+            from {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        @keyframes hologramPulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 4em;
+            }
+
+            .tagline {
+                font-size: 1em;
+            }
+        }
+
+        /* Add new styles for portal transition */
+        .portal-transition {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, #00ffff, #ff00ff);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .portal-active {
+            width: 300vh;
+            height: 300vh;
+            opacity: 1;
+        }
+
+        .glitch-text {
+            position: relative;
+            animation: glitch 0.5s infinite;
+        }
+
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+                text-shadow: 2px 2px #ff00ff, -2px -2px #00ffff;
+            }
+
+            25% {
+                transform: translate(-2px, 2px);
+                text-shadow: -2px -2px #ff00ff, 2px 2px #00ffff;
+            }
+
+            50% {
+                transform: translate(2px, -2px);
+                text-shadow: 2px -2px #ff00ff, -2px 2px #00ffff;
+            }
+
+            75% {
+                transform: translate(-2px, -2px);
+                text-shadow: -2px 2px #ff00ff, 2px -2px #00ffff;
+            }
+
+            100% {
+                transform: translate(0);
+                text-shadow: 2px 2px #ff00ff, -2px -2px #00ffff;
+            }
+        }
+
+        .enter-portal:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        @keyframes buttonGlow {
+            0% {
+                box-shadow: 0 0 5px #00ffff;
+            }
+
+            50% {
+                box-shadow: 0 0 20px #00ffff, 0 0 30px #ff00ff;
+            }
+
+            100% {
+                box-shadow: 0 0 5px #00ffff;
+            }
+        }
+
+        .digital-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        .rain-active {
+            opacity: 1;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <div id="loading"
+        style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center;">
+        <div style="color: #00ffff; font-size: 24px;">Loading...</div>
+    </div>
+    <div class="container">
+        <div class="cyber-grid"></div>
+        <div class="floating-elements">
+            <div class="hologram"></div>
+        </div>
+        <div class="content">
+            <h1 class="logo">DI9X</h1>
+            <p class="tagline">Redefining Digital Boundaries</p>
+            <button class="enter-portal" onclick="enterSite()" aria-label="Get Started">Get Started</button>
+        </div>
+    </div>
+    <div class="portal-transition"></div>
+    <canvas id="digitalRain" class="digital-rain"></canvas>
+
+    <script>
+        window.addEventListener('load', function () {
+            document.getElementById('loading').style.display = 'none';
+        });
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            // Reinitialize particles if necessary
+            initParticles();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+    </script>
+    <script>
+
+        // Thêm vào phần đầu file JavaScript
+        const createAudioEffect = () => {
+            const audio = new AudioContext();
+            const oscillator = audio.createOscillator();
+            const gainNode = audio.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audio.destination);
+
+            oscillator.type = 'sine';
+            gainNode.gain.value = 0.1;
+
+            return { oscillator, gainNode, audio };
+        };
+
+        // Thêm vào feature element hover
+        featureElement.addEventListener('mouseenter', () => {
+            const { oscillator, gainNode, audio } = createAudioEffect();
+            oscillator.frequency.setValueAtTime(500, audio.currentTime);
+            oscillator.start();
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, audio.currentTime + 0.5);
+            setTimeout(() => oscillator.stop(), 500);
+        });
+        // Thêm vào phần feature element creation
+        featureElement.addEventListener('mousemove', (e) => {
+            const rect = featureElement.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            const rotateX = (y - centerY) / 10;
+            const rotateY = (centerX - x) / 10;
+
+            featureElement.style.transform = `
+        perspective(1000px)
+        rotateX(${rotateX}deg)
+        rotateY(${rotateY}deg)
+        scale3d(1.05, 1.05, 1.05)
+    `;
+        });
+
+        featureElement.addEventListener('mouseleave', () => {
+            featureElement.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+        });
+
+
+        // Thêm vào phần feature element creation
+        featureElement.addEventListener('mouseenter', () => {
+            const terminal = document.createElement('div');
+            terminal.style.cssText = `
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        color: #0f0;
+        font-family: monospace;
+        font-size: 12px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    `;
+
+            terminal.textContent = `> Initializing ${feature.title.toLowerCase()}...`;
+            featureElement.appendChild(terminal);
+
+            setTimeout(() => {
+                terminal.style.opacity = '1';
+            }, 100);
+
+            setTimeout(() => {
+                terminal.textContent = `> ${feature.title} activated`;
+            }, 1000);
+        });
+
+        featureElement.addEventListener('mouseleave', () => {
+            const terminal = featureElement.querySelector('div:last-child');
+            if (terminal) {
+                terminal.style.opacity = '0';
+                setTimeout(() => terminal.remove(), 300);
+            }
+        });
+
+
+
+
+
+
+
+        // Add floating elements dynamically
+        function createFloatingElements() {
+            const container = document.querySelector('.floating-elements');
+            for (let i = 0; i < 10; i++) {
+                const element = document.createElement('div');
+                element.className = 'floating-element';
+                element.style.left = Math.random() * 100 + 'vw';
+                element.style.top = Math.random() * 100 + 'vh';
+                element.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(element);
+            }
+        }
+
+        function enterSite() {
+            document.querySelector('.container').style.animation = 'fadeOut 1s forwards';
+            setTimeout(() => {
+                alert('Welcome to the future of Di9x!');
+                // Add your navigation logic here
+            }, 1000);
+        }
+
+        const progressBar = document.createElement('div');
+        progressBar.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #00ffff, #ff00ff);
+    z-index: 1002;
+    transition: width 2s cubic-bezier(0.1, 0.9, 0.2, 1);
+`;
+        document.body.appendChild(progressBar);
+
+        setTimeout(() => {
+            progressBar.style.width = '100%';
+        }, 100);
+
+        setTimeout(() => {
+            progressBar.style.opacity = '0';
+        }, 2000);
+
+        createFloatingElements();
+
+        // Add mouse movement parallax effect
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+
+            document.querySelector('.cyber-grid').style.transform =
+                `rotateX(60deg) translate(-${25 + mouseX * 10}%, -${25 + mouseY * 10}%)`;
+        });
+        function enterSite() {
+            // Add glitch effect to text
+            document.querySelector('.logo').classList.add('glitch-text');
+            document.querySelector('.tagline').classList.add('glitch-text');
+
+            // Start digital rain effect
+            const canvas = document.getElementById('digitalRain');
+            canvas.classList.add('rain-active');
+            setupDigitalRain(canvas);
+
+            // Activate portal transition
+            const portal = document.querySelector('.portal-transition');
+            portal.style.display = 'block';
+            setTimeout(() => {
+                portal.classList.add('portal-active');
+            }, 100);
+
+            // Add sound effect
+            const portalSound = new Audio();
+            portalSound.src = "data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAAKAAAJGAAEBAQEBAQECgoKCgoKChAQEBAQEBAWFhYWFhYWHBwcHBwcHCIiIiIiIiIoKCgoKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sQxAADwAABpAAAACAAADSAAAAETEFNRTMuOTkuNVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+xDECgPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV";
+            portalSound.play();
+
+
+            setTimeout(() => {
+                const newContent = document.createElement('div');
+                newContent.style.position = 'fixed';
+                newContent.style.top = '0';
+                newContent.style.left = '0';
+                newContent.style.width = '100%';
+                newContent.style.height = '100%';
+                newContent.style.background = 'rgba(0,0,0,0.9)';
+                newContent.style.zIndex = '1001';
+                newContent.style.display = 'flex';
+                newContent.style.justifyContent = 'center';
+                newContent.style.alignItems = 'center';
+
+                const featuresContainer = document.createElement('div');
+                featuresContainer.className = 'features-container';
+                featuresContainer.style.cssText = `
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        padding: 40px;
+        max-width: 1200px;
+        width: 90%;
+    `;
+
+                const features = [
+                    {
+                        icon: '🔮',
+                        title: 'AI Integration',
+                        description: 'Advanced artificial intelligence solutions'
+                    },
+                    {
+                        icon: '🔒',
+                        title: 'Cyber Security',
+                        description: 'Enterprise-level security protocols'
+                    },
+                    {
+                        icon: '📊',
+                        title: 'Data Analytics',
+                        description: 'Real-time data processing & visualization'
+                    },
+                    {
+                        icon: '🌐',
+                        title: 'Cloud Solutions',
+                        description: 'Scalable cloud infrastructure'
+                    },
+                    {
+                        icon: '🤖',
+                        title: 'Automation Tools',
+                        description: 'Streamline your workflow'
+                    }
+                ];
+
+                features.forEach((feature, index) => {
+                    const featureElement = document.createElement('div');
+                    featureElement.className = 'feature-item';
+                    featureElement.style.cssText = `
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(0, 255, 255, 0.1);
+        `;
+
+                    featureElement.innerHTML = `
+            <div class="feature-background" style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+                transform: translateX(-100%);
+                transition: transform 0.6s;
+            "></div>
+            <div style="position: relative; z-index: 1;">
+                <div style="
+                    font-size: 3em;
+                    margin-bottom: 15px;
+                    background: linear-gradient(45deg, #00ffff, #ff00ff);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    color: transparent;
+                    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+                ">${feature.icon}</div>
+                <h3 style="
+                    margin: 0;
+                    font-size: 1.5em;
+                    color: #00ffff;
+                    text-transform: uppercase;
+                    letter-spacing: 2px;
+                    margin-bottom: 10px;
+                ">${feature.title}</h3>
+                <p style="
+                    margin: 0;
+                    color: rgba(255, 255, 255, 0.8);
+                    font-size: 1em;
+                    line-height: 1.6;
+                ">${feature.description}</p>
+            </div>
+        `;
+
+                    featuresContainer.appendChild(featureElement);
+
+                    setTimeout(() => {
+                        featureElement.style.opacity = '1';
+                        featureElement.style.transform = 'translateY(0)';
+                    }, 500 + (index * 150));
+                });
+
+                newContent.appendChild(featuresContainer);
+                document.body.appendChild(newContent);
+
+                // Add hover effects
+                const style = document.createElement('style');
+                style.textContent = `
+        .feature-item:hover {
+            transform: translateY(-5px) !important;
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.2);
+        }
+        .feature-item:hover .feature-background {
+            transform: translateX(100%);
+        }
+        @media (max-width: 768px) {
+            .features-container {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+        }
+    `;
+                document.head.appendChild(style);
+            }, 2000);
+        }
+
+        function setupDigitalRain(canvas) {
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const characters = "01";
+            const fontSize = 15;
+            const columns = canvas.width / fontSize;
+            const drops = [];
+
+            for (let x = 0; x < columns; x++) {
+                drops[x] = 1;
+            }
+
+            function draw() {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = "#0F0";
+                ctx.font = fontSize + "px arial";
+
+                for (let i = 0; i < drops.length; i++) {
+                    const text = characters.charAt(Math.floor(Math.random() * characters.length));
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975)
+                        drops[i] = 0;
+
+                    drops[i]++;
+                }
+            }
+        }
+        function animateDigitalRain() {
+            draw();
+            requestAnimationFrame(animateDigitalRain);
+        }
+        requestAnimationFrame(animateDigitalRain);
+    </script>
+    <script>
+        // Particle System
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 2 - 1;
+                this.color = `rgba(${Math.random() < 0.5 ? '0, 255, 255' : '255, 0, 255'}, ${Math.random()})`;
+            }
+
+            update(mouseX, mouseY) {
+                const dx = mouseX - this.x;
+                const dy = mouseY - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < 100) {
+                    const angle = Math.atan2(dy, dx);
+                    this.speedX = -Math.cos(angle) * 2;
+                    this.speedY = -Math.sin(angle) * 2;
+                }
+
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > window.innerWidth) this.speedX *= -1;
+                if (this.y < 0 || this.y > window.innerHeight) this.speedY *= -1;
+            }
+
+            draw(ctx) {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+        `;
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+
+        let particles = [];
+        let mouseX = 0;
+        let mouseY = 0;
+
+        function initParticles() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+
+            for (let i = 0; i < 100; i++) {
+                particles.push(new Particle(
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height
+                ));
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(particle => {
+                particle.update(mouseX, mouseY);
+                particle.draw(ctx);
+            });
+
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        window.addEventListener('resize', initParticles);
+        initParticles();
+        animateParticles();
+
+        // Thêm vào phần cuối file
+        const cursorTrail = document.createElement('div');
+        cursorTrail.style.cssText = `
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: rgba(0, 255, 255, 0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1000;
+    mix-blend-mode: screen;
+    transition: transform 0.1s;
+`;
+        document.body.appendChild(cursorTrail);
+
+        document.addEventListener('mousemove', (e) => {
+            cursorTrail.style.transform = `translate(${e.clientX - 5}px, ${e.clientY - 5}px)`;
+        });
+    </script>
+</body>
+
+</html>

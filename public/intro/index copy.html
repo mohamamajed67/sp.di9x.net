@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Di9x - Future Innovation</title>
+    <style>
+        /* ... Previous styles remain ... */
+
+        /* Add new styles for portal transition */
+        .portal-transition {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, #00ffff, #ff00ff);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .portal-active {
+            width: 300vh;
+            height: 300vh;
+            opacity: 1;
+        }
+
+        .glitch-text {
+            position: relative;
+            animation: glitch 0.5s infinite;
+        }
+
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+                text-shadow: 2px 2px #ff00ff, -2px -2px #00ffff;
+            }
+            25% {
+                transform: translate(-2px, 2px);
+                text-shadow: -2px -2px #ff00ff, 2px 2px #00ffff;
+            }
+            50% {
+                transform: translate(2px, -2px);
+                text-shadow: 2px -2px #ff00ff, -2px 2px #00ffff;
+            }
+            75% {
+                transform: translate(-2px, -2px);
+                text-shadow: -2px 2px #ff00ff, 2px -2px #00ffff;
+            }
+            100% {
+                transform: translate(0);
+                text-shadow: 2px 2px #ff00ff, -2px -2px #00ffff;
+            }
+        }
+
+        .enter-portal:hover {
+            animation: buttonGlow 2s infinite;
+        }
+
+        @keyframes buttonGlow {
+            0% {
+                box-shadow: 0 0 5px #00ffff;
+            }
+            50% {
+                box-shadow: 0 0 20px #00ffff, 0 0 30px #ff00ff;
+            }
+            100% {
+                box-shadow: 0 0 5px #00ffff;
+            }
+        }
+
+        .digital-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        .rain-active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Previous HTML content -->
+    <div class="portal-transition"></div>
+    <canvas id="digitalRain" class="digital-rain"></canvas>
+
+    <script>
+        // Previous JavaScript code
+
+        function enterSite() {
+            // Add glitch effect to text
+            document.querySelector('.logo').classList.add('glitch-text');
+            document.querySelector('.tagline').classList.add('glitch-text');
+
+            // Start digital rain effect
+            const canvas = document.getElementById('digitalRain');
+            canvas.classList.add('rain-active');
+            setupDigitalRain(canvas);
+
+            // Activate portal transition
+            const portal = document.querySelector('.portal-transition');
+            portal.style.display = 'block';
+            setTimeout(() => {
+                portal.classList.add('portal-active');
+            }, 100);
+
+            // Add sound effect
+            const portalSound = new Audio();
+            portalSound.src = "data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAAKAAAJGAAEBAQEBAQECgoKCgoKChAQEBAQEBAWFhYWFhYWHBwcHBwcHCIiIiIiIiIoKCgoKCgoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sQxAADwAABpAAAACAAADSAAAAETEFNRTMuOTkuNVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+xDECgPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV";
+            portalSound.play();
+
+            setTimeout(() => {
+                // Navigate to new page or show new content
+                const newContent = document.createElement('div');
+                newContent.style.position = 'fixed';
+                newContent.style.top = '50%';
+                newContent.style.left = '50%';
+                newContent.style.transform = 'translate(-50%, -50%)';
+                newContent.style.color = '#fff';
+                newContent.style.fontSize = '2em';
+                newContent.style.textAlign = 'center';
+                newContent.style.zIndex = '1001';
+                newContent.innerHTML = `
+                    <h1 style="font-size: 3em; margin-bottom: 20px;">Welcome to DI9X</h1>
+                    <p>Initiating future protocols...</p>
+                `;
+                document.body.appendChild(newContent);
+
+                // Add your navigation logic here
+                setTimeout(() => {
+                    // window.location.href = 'your-next-page.html';
+                }, 3000);
+            }, 2000);
+        }
+
+        function setupDigitalRain(canvas) {
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const characters = "01";
+            const fontSize = 15;
+            const columns = canvas.width/fontSize;
+            const drops = [];
+
+            for(let x = 0; x < columns; x++) {
+                drops[x] = 1;
+            }
+
+            function draw() {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = "#0F0";
+                ctx.font = fontSize + "px arial";
+
+                for(let i = 0; i < drops.length; i++) {
+                    const text = characters.charAt(Math.floor(Math.random() * characters.length));
+                    ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+                    
+                    if(drops[i]*fontSize > canvas.height && Math.random() > 0.975)
+                        drops[i] = 0;
+                    
+                    drops[i]++;
+                }
+            }
+
+            setInterval(draw, 33);
+        }
+    </script>
+</body>
+</html>

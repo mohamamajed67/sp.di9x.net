@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Di9x Tool - Immersive Experience</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+        #scene-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #fff;
+            z-index: 10;
+        }
+        h1 {
+            font-size: 5vw;
+            margin: 0;
+            opacity: 0;
+        }
+        .glitch {
+            position: relative;
+        }
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 #ff00c1;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+        .glitch::after {
+            left: -2px;
+            text-shadow: -2px 0 #00fff9, 2px 2px #ff00c1;
+            animation: glitch-anim2 1s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim {
+            0% {
+                clip: rect(60px, 9999px, 91px, 0);
+            }
+            20% {
+                clip: rect(2px, 9999px, 4px, 0);
+            }
+            40% {
+                clip: rect(12px, 9999px, 18px, 0);
+            }
+            60% {
+                clip: rect(78px, 9999px, 87px, 0);
+            }
+            80% {
+                clip: rect(56px, 9999px, 62px, 0);
+            }
+            100% {
+                clip: rect(22px, 9999px, 31px, 0);
+            }
+        }
+        @keyframes glitch-anim2 {
+            0% {
+                clip: rect(65px, 9999px, 99px, 0);
+            }
+            20% {
+                clip: rect(8px, 9999px, 16px, 0);
+            }
+            40% {
+                clip: rect(79px, 9999px, 85px, 0);
+            }
+            60% {
+                clip: rect(34px, 9999px, 43px, 0);
+            }
+            80% {
+                clip: rect(12px, 9999px, 20px, 0);
+            }
+            100% {
+                clip: rect(54px, 9999px, 61px, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="scene-container"></div>
+    <div id="content">
+        <h1 class="glitch" data-text="Welcome to Di9x Tool">Welcome to Di9x Tool</h1>
+    </div>
+
+    <script>
+        // Three.js setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('scene-container').appendChild(renderer.domElement);
+
+        // Create particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 5000;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for (let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 5;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.005,
+            color: 0xffffff
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        camera.position.z = 2;
+
+        // Animation
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsedTime = clock.getElapsedTime();
+
+            particlesMesh.rotation.y = elapsedTime * 0.1;
+            particlesMesh.rotation.x = elapsedTime * 0.15;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // GSAP animation
+        gsap.to('h1', {
+            opacity: 1,
+            duration: 2,
+            delay: 0.5,
+            ease: "power3.out"
+        });
+
+        // Interactive particles
+        window.addEventListener('mousemove', (event) => {
+            const mouseX = event.clientX / window.innerWidth - 0.5;
+            const mouseY = event.clientY / window.innerHeight - 0.5;
+
+            gsap.to(particlesMesh.rotation, {
+                x: mouseY * 0.5,
+                y: mouseX * 0.5,
+                duration: 2
+            });
+        });
+    </script>
+</body>
+</html>

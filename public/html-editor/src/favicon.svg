@@ -1,0 +1,28 @@
+<svg width="400" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="envelopeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0099FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00BFFF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Envelope body -->
+  <path d="M20 50 L100 100 L180 50 L180 150 L20 150 Z" fill="url(#envelopeGradient)"/>
+  
+  <!-- Envelope flap (open) -->
+  <path d="M20 50 L100 20 L180 50" fill="#0080DD"/>
+  
+  <!-- Envelope flap edge -->
+  <path d="M20 50 L100 100 L180 50" stroke="#0080DD" stroke-width="2" fill="none"/>
+  
+  <!-- Motion lines -->
+  <path d="M0 70 L30 70" stroke="#0080DD" stroke-width="5" stroke-linecap="round">
+    <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" />
+  </path>
+  <path d="M0 100 L20 100" stroke="#0080DD" stroke-width="5" stroke-linecap="round">
+    <animate attributeName="opacity" values="0;1;0" dur="2s" begin="0.3s" repeatCount="indefinite" />
+  </path>
+  <path d="M0 130 L10 130" stroke="#0080DD" stroke-width="5" stroke-linecap="round">
+    <animate attributeName="opacity" values="0;1;0" dur="2s" begin="0.6s" repeatCount="indefinite" />
+  </path>
+</svg>
