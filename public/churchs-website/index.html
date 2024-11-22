@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giờ Thánh Lễ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+        
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="./churchs-website/images/favicon.svg">
+    <link rel="stylesheet" href="./churchs-website/responsive.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --background: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--card-bg);
+            padding: 2rem;
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            margin-bottom: 2rem;
+            /* padding-bottom: 2rem; */
+            border-bottom: 1px solid #e2e8f0;
+            background-color: cadetblue;
+            border-radius: 15px;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .menu-item {
+            padding: 1rem;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover {
+            background: #f8fafc;
+            color: var(--text-primary);
+        }
+
+        .menu-item.active {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Search and Filters */
+        .filters-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: var(--card-bg);
+            font-size: 0.95rem;
+        }
+
+        .filter-select {
+            width: auto;
+            min-width: 150px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: var(--card-bg);
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .search-input:focus,
+        .filter-select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Table Design */
+        .table-container {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 1.25rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            color: var(--text-primary);
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 100;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .filters-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            background: var(--card-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pagination button:hover {
+            background: #f8fafc;
+        }
+
+        .pagination button.active {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem;
+            border-radius: 50%;
+            background: var(--card-bg);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Dark Mode Styles */
+        [data-theme="dark"] {
+            --background: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            padding: 0.5rem;
+            background: var(--card-bg);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+        }
+
+        .time-filter {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: #6366f1;
+            border-bottom: 2px solid #6366f1;
+        }
+
+        .time-slots {
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .time-slot {
+            position: relative;
+        }
+
+        .time-slot input[type="checkbox"] {
+            display: none;
+        }
+
+        .time-slot label {
+            display: block;
+            padding: 0.5rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .time-slot input[type="checkbox"]:checked+label {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .search-filters {
+                flex-direction: column;
+            }
+            
+            .filter-select {
+                width: 100%;
+            }
+        }
+
+        /* Modal base styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto; /* Enable scroll for entire modal */
+        }
+
+        .modal-content {
+            position: relative;
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 900px;
+            margin: 20px auto; /* Reduced from 50px to 20px */
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            max-height: 90vh; /* Maximum height */
+            overflow-y: auto; /* Enable scroll for content */
+            scroll-behavior: smooth;
+            
+            /* For Chrome, Safari, and newer versions of Edge */
+            &::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            &::-webkit-scrollbar-track {
+                background: transparent;
+                border-radius: 4px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 4px;
+                transition: background 0.2s ease;
+            }
+
+            &::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
+        }
+
+        /* For Firefox */
+        .modal-content {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+
+        /* Dark mode adjustments */
+        [data-theme="dark"] .modal-content {
+            &::-webkit-scrollbar-thumb {
+                background: #4b5563;
+            }
+
+            &::-webkit-scrollbar-thumb:hover {
+                background: #6b7280;
+            }
+
+            /* For Firefox */
+            scrollbar-color: #4b5563 transparent;
+        }
+
+        /* Optional: Hide scrollbar when not scrolling */
+        .modal-content {
+            &::-webkit-scrollbar {
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+            &:hover::-webkit-scrollbar {
+                opacity: 1;
+            }
+        }
+
+        /* Ensure modal close button stays visible */
+        .modal-close {
+            position: sticky;
+            top: 0;
+            right: 1rem;
+            float: right;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1001;
+            padding: 0.5rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .modal-content {
+                margin: 10px auto;
+                padding: 1rem;
+                width: 95%;
+            }
+
+            .church-main-info {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .mass-schedule {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            /* Adjust image height for mobile */
+            .church-thumbnail {
+                height: 200px;
+            }
+        }
+
+        /* Add smooth scrolling */
+        .modal-content {
+            scroll-behavior: smooth;
+        }
+
+        /* Optional: Add some padding at the bottom for better scrolling experience */
+        .church-details {
+            padding-bottom: 2rem;
+        }
+
+        .church-details h2 {
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        .church-main-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .church-info-left {
+            padding-right: 1rem;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .detail-label {
+            width: 100px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+        }
+
+        .church-image-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .church-thumbnail {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .mass-times {
+            margin-top: 2rem;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 1.5rem;
+        }
+
+        .mass-times h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+
+        .mass-schedule {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.75rem;
+        }
+
+        .mass-day {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .mass-day h4 {
+            color: var(--text-secondary);
+            text-align: center;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .mass-time-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .mass-time-list li {
+            padding: 0.25rem 0;
+            color: var(--text-primary);
+        }
+
+        .priests-section {
+            margin-top: 2rem;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 1.5rem;
+        }
+
+        .priests-section h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+
+        .priests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .priest-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .priest-role {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .priest-name {
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .priest-year {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .church-main-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .mass-schedule {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
+        /* Styles cho modal ảnh lớn */
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        .image-modal img {
+            max-width: 90%;
+            max-height: 90vh;
+            margin: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: contain;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            padding: 1rem;
+        }
+
+        .pagination button {
+            min-width: 40px;
+            height: 40px;
+            border: 1px solid #e2e8f0;
+            background: var(--card-bg);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-primary);
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: var(--hover-bg);
+            border-color: var(--border-hover);
+        }
+
+        .pagination button.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination .pagination-dots {
+            padding: 0 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .pagination .prev-page,
+        .pagination .next-page {
+            font-size: 0.875rem;
+        }
+
+        /* Mobile Card View */
+        @media (max-width: 768px) {
+            .table-container {
+                background: transparent;
+                box-shadow: none;
+                padding: 0.5rem;
+            }
+
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead tr {
+                display: none;
+            }
+
+            tbody tr {
+                background: var(--card-bg);
+                border-radius: 16px;
+                margin-bottom: 1rem;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                cursor: pointer;
+                overflow: hidden;
+                transition: all 0.2s ease;
+            }
+
+            /* Container chính của card */
+            .church-card {
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Phần header của card */
+            .church-header {
+                display: flex;
+                align-items: center;
+                padding: 1rem;
+                gap: 0.75rem;
+                border-bottom: 1px solid #f1f5f9;
+            }
+
+            /* Icon nhà thờ */
+            .church-icon {
+                width: 40px;
+                height: 40px;
+                background: #f1f5f9;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #6366f1;
+                flex-shrink: 0;
+            }
+
+            /* Thông tin chính */
+            .church-info {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .church-name {
+                font-weight: 600;
+                color: var(--text-primary);
+                margin-bottom: 0.25rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .church-location {
+                font-size: 0.85rem;
+                color: var(--text-secondary);
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            /* Phần footer của card */
+            .church-footer {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0.75rem 1rem;
+                background: #f8fafc;
+            }
+
+            /* Badge cho số lượng lễ */
+            .mass-stats {
+                display: flex;
+                gap: 1rem;
+            }
+
+            .mass-badge {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                font-size: 0.8rem;
+                color: var(--text-secondary);
+            }
+
+            .mass-badge i {
+                color: #6366f1;
+            }
+
+            /* Nút xem chi tiết */
+            .view-more {
+                color: #6366f1;
+                font-size: 0.85rem;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            /* Hiệu ứng hover */
+            tbody tr:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            }
+
+            /* Hiệu ứng active */
+            tbody tr:active {
+                transform: scale(0.98);
+            }
+        }
+
+        .refresh-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .refresh-button:hover {
+            background: #f8fafc;
+            border-color: #6366f1;
+        }
+
+        .refresh-button i {
+            font-size: 0.9rem;
+        }
+
+        /* Thêm animation xoay cho icon khi click */
+        .refresh-button.rotating i {
+            animation: rotating 0.5s linear;
+        }
+
+        @keyframes rotating {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive adjustment */
+        @media (max-width: 640px) {
+            .refresh-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="./churchs-website/images/logo.svg" alt="Logo" height="70">
+        </div>
+        <nav class="sidebar-menu">
+            <a href="#" class="menu-item active">Trang chủ</a>
+            <a href="#" class="menu-item">Giờ Lễ</a>
+            <a href="#" class="menu-item">Nhà Thờ</a>
+            <a href="#" class="menu-item">Thống kê</a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <button class="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <header class="dashboard-header">
+            <div class="header-title">
+                <h1>Giờ Thánh Lễ</h1>
+            </div>
+        </header>
+
+        <!-- Filters -->
+        <section class="filters-section">
+            <div class="search-filters">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="search" class="search-input" placeholder="Tìm nhà thờ...">
+                </div>
+                <select class="filter-select">
+                    <option value="">Tất cả quận</option>
+                    <option value="quan1">Quận 1</option>
+                    <option value="quan2">Quận 2</option>
+                    <option value="quan3">Quận 3</option>
+                    <option value="quan4">Quận 4</option>
+                    <option value="quan5">Quận 5</option>
+                    <option value="quan6">Quận 6</option>
+                    <option value="quan7">Quận 7</option>
+                    <option value="quan8">Quận 8</option>
+                    <option value="quan9">Quận 9</option>
+                    <option value="quan10">Quận 10</option>
+                    <option value="quan11">Quận 11</option>
+                    <option value="quan12">Quận 12</option>
+                    <option value="quanBinhTan">Quận Bình Tân</option>
+                    <option value="quanBinhThanh">Quận Bình Thạnh</option>
+                    <option value="quanGoVap">Quận Gò Vấp</option>
+                    <option value="quanPhuNhuan">Quận Phú Nhuận</option>
+                    <option value="quanTanBinh">Quận Tân Bnh</option>
+                    <option value="quanTanPhu">Quận Tân Phú</option>
+                    <option value="quanThuDuc">Quận Thủ Đức</option>
+                    <option value="huyenBinhChanh">Huyện Bình Chánh</option>
+                    <option value="huyenCanGio">Huyện Cần Giờ</option>
+                    <option value="huyenCuChi">Huyện Củ Chi</option>
+                    <option value="huyenHocMon">Huyện Hóc Môn</option>
+                    <option value="huyenNhaBe">Huyện Nhà Bè</option>
+                </select>
+                <button class="refresh-button">
+                    <i class="fas fa-sync-alt"></i>
+                    Làm mới
+                </button>
+            </div>
+            <div class="time-filter">
+                <div class="tabs">
+                    <button class="tab active" data-day="weekday">Ngày thuờng</button>
+                    <button class="tab" data-day="saturday">Thứ Bảy</button>
+                    <button class="tab" data-day="sunday">Chúa Nhật</button>
+                </div>
+                <div class="time-slots">
+                    <!-- Thời gian sẽ được render ở đây -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div class="loading-spinner hidden">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state hidden">
+            <i class="fas fa-church"></i>
+            <h3>Không tìm thấy kết quả</h3>
+            <p>Vui lòng thử lại với các bộ lọc khác</p>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nhà Thờ</th>
+                        <th>Quận</th>
+                        <th>Địa chỉ</th>
+                        <th>Lễ Chúa Nhật</th>
+                        <th>Lễ Thứ 7</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated from churches.json -->
+                </tbody>
+            </table>
+        </div>
+        <!-- Pagination -->
+        <div class="pagination">
+            <button class="prev-page"><i class="fas fa-chevron-left"></i></button>
+            <button class="active">1</button>
+            <button>2</button>
+            <button>3</button>
+            <button class="next-page"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal" id="churchModal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div class="church-details">
+                <h2 id="churchName"></h2>
+                <div class="church-main-info">
+                    <div class="church-info-left">
+                        <div class="mass-times">
+                            <h3>Thông tin nhà thờ</h3>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Địa chỉ:</span>
+                            <span class="detail-value" id="churchAddress"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Bổn mạng:</span>
+                            <span class="detail-value" id="churchPatron"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Liên hệ:</span>
+                            <span class="detail-value" id="churchPhone"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Thành lập:</span>
+                            <span class="detail-value" id="churchFoundedYear"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="church-image-container">
+                        <img class="church-thumbnail" id="churchImage" alt="Hình ảnh nhà thờ">
+                    </div>
+                </div>
+
+                <div class="mass-times">
+                    <h3>Lịch Thánh Lễ</h3>
+                    <div class="mass-schedule" id="massSchedule"></div>
+                </div>
+
+                <div class="priests-section">
+                    <h3>Linh mục phụ trách</h3>
+                    <div id="priestsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal cho ảnh lớn -->
+    <div id="imageModal" class="image-modal">
+        <img id="expandedImg">
+    </div>
+
+    <script>
+        // Khai báo biến churches ở scope toàn cục
+        let churches = [];
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Fetch churches data
+            try {
+                const response = await fetch('./churchs-website/churches.json');
+                churches = await response.json();
+                
+                // Sau khi có dữ liệu, render time slots mặc đnh
+                renderTimeSlots('weekday');
+                
+                // Extract districts and populate select
+                const districts = [...new Set(churches.map(church => {
+                    const address = church.address;
+                    const districtMatch = address.match(/Q\.\s*(\d+|[^,]+)|Quận\s*(\d+|[^,]+)|Huyện\s*([^,]+)/i);
+                    return districtMatch ? districtMatch[0].trim() : 'Khác';
+                }))].sort();
+
+                // Populate district select
+                const districtSelect = document.querySelector('.filter-select');
+                districtSelect.innerHTML = '<option value="">Tất cả quận</option>' +
+                    districts.map(district => `<option value="${district}">${district}</option>`).join('');
+
+                // Initial table population
+                populateTable();
+
+                // Add event listeners
+                document.querySelector('.search-input').addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const filteredChurches = churches.filter(church => 
+                        church.name.toLowerCase().includes(searchTerm) ||
+                        church.address.toLowerCase().includes(searchTerm)
+                    );
+                    populateTable(filteredChurches);
+                });
+
+                districtSelect.addEventListener('change', function() {
+                    const selectedDistrict = this.value.toLowerCase();
+                    const filteredChurches = selectedDistrict ? 
+                        churches.filter(church => 
+                            church.address.toLowerCase().includes(selectedDistrict)
+                        ) : churches;
+                    populateTable(filteredChurches);
+                });
+
+                // Tab switching
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        renderTimeSlots(tab.dataset.day);
+                    });
+                });
+
+            } catch (error) {
+                console.error('Error loading churches data:', error);
+            }
+        });
+
+        function getUniqueMassTimes(churches, dayType) {
+            const times = new Set();
+            
+            churches.forEach(church => {
+                switch(dayType) {
+                    case 'weekday':
+                        // Lấy giờ từ thứ 2 đến thứ 6
+                        ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(day => {
+                            church.massTimes[day]?.forEach(time => times.add(time));
+                        });
+                        break;
+                    case 'saturday':
+                        church.massTimes.saturday?.forEach(time => times.add(time));
+                        break;
+                    case 'sunday':
+                        church.massTimes.sunday?.forEach(time => times.add(time));
+                        break;
+                }
+            });
+
+            // Loại bỏ giá trị rỗng và sắp xếp theo thời gian
+            return Array.from(times)
+                .filter(time => time && time.trim())
+                .sort((a, b) => {
+                    const timeA = a.split(':').map(Number);
+                    const timeB = b.split(':').map(Number);
+                    return timeA[0] * 60 + timeA[1] - (timeB[0] * 60 + timeB[1]);
+                });
+        }
+
+        function renderTimeSlots(day) {
+            const timeSlotsContainer = document.querySelector('.time-slots');
+            timeSlotsContainer.innerHTML = '';
+
+            const times = getUniqueMassTimes(churches, day);
+            
+            times.forEach(time => {
+                const slot = document.createElement('div');
+                slot.className = 'time-slot';
+                slot.innerHTML = `
+                    <input type="checkbox" id="time-${time}" value="${time}">
+                    <label for="time-${time}">${time}</label>
+                `;
+                timeSlotsContainer.appendChild(slot);
+            });
+
+            // Thêm event listener cho các checkbox
+            timeSlotsContainer.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', filterChurches);
+            });
+        }
+
+        function filterChurches() {
+            const selectedTimes = Array.from(document.querySelectorAll('.time-slot input:checked'))
+                .map(input => input.value);
+            const activeDay = document.querySelector('.tab.active').dataset.day;
+            
+            let filteredChurches = churches;
+
+            // Nếu có chọn thời gian
+            if (selectedTimes.length > 0) {
+                filteredChurches = churches.filter(church => {
+                    switch(activeDay) {
+                        case 'weekday':
+                            // Kiểm tra các ngày trong tuần
+                            return ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].some(day => 
+                                church.massTimes[day]?.some(time => selectedTimes.includes(time))
+                            );
+                        case 'saturday':
+                            return church.massTimes.saturday?.some(time => selectedTimes.includes(time));
+                        case 'sunday':
+                            return church.massTimes.sunday?.some(time => selectedTimes.includes(time));
+                        default:
+                            return false;
+                    }
+                });
+            }
+
+            // Áp dụng các bộ lọc khác nếu có (ví dụ: tìm kiếm, quận)
+            const searchTerm = document.querySelector('.search-input').value.toLowerCase();
+            const selectedDistrict = document.querySelector('.filter-select').value.toLowerCase();
+
+            if (searchTerm) {
+                filteredChurches = filteredChurches.filter(church => 
+                    church.name.toLowerCase().includes(searchTerm) ||
+                    church.address.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (selectedDistrict) {
+                filteredChurches = filteredChurches.filter(church => 
+                    church.address.toLowerCase().includes(selectedDistrict)
+                );
+            }
+
+            populateTable(filteredChurches);
+        }
+
+        // Show church details in modal
+        function showChurchDetails(church) {
+            // Thông tin cơ bản
+            document.getElementById('churchName').textContent = church.name;
+            
+            // Xử l hiển thị ảnh
+            const imageUrl = `https://tgpsaigon.net${church.image}`;
+            const thumbnailImg = document.getElementById('churchImage');
+            thumbnailImg.src = imageUrl;
+            thumbnailImg.alt = church.name;
+            
+            // Thêm event listener cho ảnh thumbnail
+            thumbnailImg.addEventListener('click', function() {
+                const imageModal = document.getElementById('imageModal');
+                const expandedImg = document.getElementById('expandedImg');
+                expandedImg.src = imageUrl;
+                imageModal.style.display = 'block';
+            });
+
+            // Thông tin chi tiết
+            document.getElementById('churchAddress').textContent = church.address;
+            document.getElementById('churchPatron').textContent = church.patron || 'Không có thông tin';
+            document.getElementById('churchPhone').textContent = church.phone || 'Không có thông tin';
+            document.getElementById('churchFoundedYear').textContent = church.foundedYear || 'Không có thông tin';
+
+            // Sắp xếp thứ tự các ngày trong tuần
+            const dayOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            
+            // Hiển thị lịch thnh lễ
+            const massSchedule = document.getElementById('massSchedule');
+            massSchedule.innerHTML = dayOrder.map(day => {
+                const times = church.massTimes[day] || [];
+                return `
+                    <div class="mass-day">
+                        <h4>${getDayName(day)}</h4>
+                        <ul class="mass-time-list">
+                            ${times.length > 0 
+                                ? times.map(time => `<li>${time}</li>`).join('')
+                                : '<li>Không có lễ</li>'
+                            }
+                        </ul>
+                    </div>
+                `;
+            }).join('');
+
+            // Hiển thị danh sách linh mục
+            const priestsList = document.getElementById('priestsList');
+            priestsList.innerHTML = `
+                <div class="priests-grid">
+                    ${church.priests.map(priest => `
+                        <div class="priest-card">
+                            <div class="priest-role">${priest.role}</div>
+                            <div class="priest-name">${priest.name}</div>
+                            <div class="priest-year">Từ năm ${priest.fromYear}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            // Hiển thị modal
+            document.getElementById('churchModal').style.display = 'block';
+        }
+
+        // Helper function để chuyển đổi tên ngày sang tiếng Việt
+        function getDayName(day) {
+            const dayNames = {
+                monday: 'Thứ 2',
+                tuesday: 'Thứ 3',
+                wednesday: 'Thứ 4',
+                thursday: 'Thứ 5',
+                friday: 'Thứ 6',
+                saturday: 'Thứ 7',
+                sunday: 'CN'
+            };
+            return dayNames[day] || day;
+        }
+
+        // Close modal
+        document.querySelector('.modal-close').addEventListener('click', () => {
+            document.getElementById('churchModal').style.display = 'none';
+        });
+
+        // Populate table
+        function populateTable(filteredChurches = churches) {
+            const tbody = document.querySelector('tbody');
+            const isMobile = window.innerWidth <= 768;
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedChurches = filteredChurches.slice(startIndex, endIndex);
+
+            tbody.innerHTML = paginatedChurches.map(church => {
+                const district = church.address.match(/Q\.\s*(\d+|[^,]+)|Quận\s*(\d+|[^,]+)|Huyện\s*([^,]+)/i)?.[0] || 'Khác';
+                
+                if (isMobile) {
+                    const sundayMasses = church.massTimes.sunday?.length || 0;
+                    const saturdayMasses = church.massTimes.saturday?.length || 0;
+                    
+                    return `
+                        <tr onclick="showChurchDetails(${JSON.stringify(church).replace(/"/g, '&quot;')})">
+                            <td>
+                                <div class="church-card">
+                                    <div class="church-header">
+                                        <div class="church-icon">
+                                            <i class="fas fa-church"></i>
+                                        </div>
+                                        <div class="church-info">
+                                            <div class="church-name">${church.name}</div>
+                                            <div class="church-location">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                ${district} • ${church.address.split(',')[0]}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="church-footer">
+                                        <div class="mass-stats">
+                                            <div class="mass-badge">
+                                                <i class="fas fa-sun"></i>
+                                                CN: ${sundayMasses} lễ
+                                            </div>
+                                            <div class="mass-badge">
+                                                <i class="fas fa-star"></i>
+                                                T7: ${saturdayMasses} lễ
+                                            </div>
+                                        </div>
+                                        <div class="view-more">
+                                            Chi tiết
+                                            <i class="fas fa-chevron-right"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    // Desktop view (giữ nguyên)
+                    return `
+                        <tr onclick="showChurchDetails(${JSON.stringify(church).replace(/"/g, '&quot;')})">
+                            <td>${church.name}</td>
+                            <td>${district}</td>
+                            <td>${church.address}</td>
+                            <td>${church.massTimes.sunday.join(', ')}</td>
+                            <td>${church.massTimes.saturday.join(', ')}</td>
+                        </tr>
+                    `;
+                }
+            }).join('');
+
+            setupPagination(filteredChurches);
+        }
+
+        // Thêm event listener để cập nhật giao diện khi resize
+        window.addEventListener('resize', () => {
+            populateTable(churches);
+        });
+
+        // Thêm event listeners cho modal ảnh
+        document.getElementById('imageModal').addEventListener('click', function() {
+            this.style.display = 'none';
+        });
+
+        // Ngăn chặn việc đóng modal khi click vào ảnh
+        document.getElementById('expandedImg').addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+
+        // Khai báo biến phân trang
+        let currentPage = 1;
+        const itemsPerPage = 10; // Số nhà thờ hiển thị trên mỗi trang
+
+        function setupPagination(filteredChurches = churches) {
+            const totalPages = Math.ceil(filteredChurches.length / itemsPerPage);
+            const pagination = document.querySelector('.pagination');
+            
+            // Tạo nút phân trang
+            let paginationHTML = `
+                <button class="prev-page" ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            `;
+
+            // Tạo các nút số trang
+            for (let i = 1; i <= totalPages; i++) {
+                if (
+                    i === 1 || // Luôn hiển thị trang đầu
+                    i === totalPages || // Luôn hiển thị trang cuối
+                    (i >= currentPage - 1 && i <= currentPage + 1) // Hiển thị trang hiện tại và 2 trang xung quanh
+                ) {
+                    paginationHTML += `
+                        <button class="${i === currentPage ? 'active' : ''}" data-page="${i}">
+                            ${i}
+                        </button>
+                    `;
+                } else if (
+                    (i === currentPage - 2 && currentPage > 3) ||
+                    (i === currentPage + 2 && currentPage < totalPages - 2)
+                ) {
+                    paginationHTML += `<span class="pagination-dots">...</span>`;
+                }
+            }
+
+            paginationHTML += `
+                <button class="next-page" ${currentPage === totalPages ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+
+            pagination.innerHTML = paginationHTML;
+
+            // Thêm event listeners cho các nút
+            pagination.querySelectorAll('button').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (this.classList.contains('prev-page') && currentPage > 1) {
+                        currentPage--;
+                    } else if (this.classList.contains('next-page') && currentPage < totalPages) {
+                        currentPage++;
+                    } else if (this.dataset.page) {
+                        currentPage = parseInt(this.dataset.page);
+                    }
+            
+                    populateTable(filteredChurches);
+                    setupPagination(filteredChurches);
+                });
+            });
+        }
+
+        // Thêm vào phần khởi tạo
+        document.addEventListener('DOMContentLoaded', function() {
+            // setupDarkMode(); // Xóa dòng này
+            // ... giữ lại các phần khác ...
+        });
+
+        // Thêm vào phần script
+        function setupMobileTableInteraction() {
+            if (window.innerWidth <= 768) {
+                const rows = document.querySelectorAll('table tr');
+                rows.forEach(row => {
+                    // Thêm hiệu ứng ripple khi click
+                    row.addEventListener('click', function(e) {
+                        const ripple = document.createElement('div');
+                        ripple.classList.add('ripple');
+                        this.appendChild(ripple);
+                        
+                        const rect = this.getBoundingClientRect();
+                        ripple.style.left = `${e.clientX - rect.left}px`;
+                        ripple.style.top = `${e.clientY - rect.top}px`;
+                        
+                        setTimeout(() => ripple.remove(), 600);
+                    });
+                });
+            }
+        }
+
+        // Gọi function khi trang load và khi resize
+        document.addEventListener('DOMContentLoaded', setupMobileTableInteraction);
+        window.addEventListener('resize', setupMobileTableInteraction);
+
+        // Thêm function refresh
+        function refreshFilters() {
+            // Reset search input
+            document.querySelector('.search-input').value = '';
+            
+            // Reset district select
+            document.querySelector('.filter-select').value = '';
+            
+            // Reset time slots checkboxes
+            document.querySelectorAll('.time-slot input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Reset to page 1
+            currentPage = 1;
+            
+            // Repopulate table with all churches
+            populateTable(churches);
+            
+            // Add rotation animation
+            const refreshButton = document.querySelector('.refresh-button');
+            refreshButton.classList.add('rotating');
+            setTimeout(() => {
+                refreshButton.classList.remove('rotating');
+            }, 500);
+        }
+
+        // Add event listener for refresh button
+        document.querySelector('.refresh-button').addEventListener('click', refreshFilters);
+    </script>
+
+</body>
+
+</html>

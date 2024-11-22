@@ -213,6 +213,11 @@ app.get('/migration-365', async (req, res) => {
     res.sendFile(path.join(__dirname, 'public/migration-365/index.html'));
 });
 
+app.get('/churchs-web', async (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/churchs-website/index.html'));
+});
+
+
 
 app.get('/mbws/:domain', async (req, res) => {
     const domain = req.params.domain;
