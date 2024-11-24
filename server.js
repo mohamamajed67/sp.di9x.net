@@ -217,6 +217,10 @@ app.get('/churchs-web', async (req, res) => {
     res.sendFile(path.join(__dirname, 'public/churchs-website/index.html'));
 });
 
+app.get('/html-editor-pro', async (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/html-editor-pro/index.html'));
+});
+
 
 
 app.get('/mbws/:domain', async (req, res) => {

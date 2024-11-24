@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Note</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.tiny.cloud/1/l68j4twvomf8pq14h0ggris7wgfoheipu9bhkzgc555yd3e6/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 100%;
+            margin: 0 auto;
+            overflow-x: hidden;
+        }
+
+        .editor-panel, .html-preview {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px;
+            height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .panel-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #html-output {
+            flex: 1;
+            width: 100%;
+            font-family: monospace;
+            font-size: 14px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            resize: none;
+            white-space: pre-wrap;
+            background: #f8f8f8;
+        }
+
+        #editor {
+            flex: 1;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .toolbar {
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .btn-save {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #f44336;
+            color: white;
+        }
+        .tox-statusbar__branding {
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: #e74c3c;
+        }
+
+        .variable-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .variable-category {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .variable-category:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .category-title {
+            font-size: 1rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-title i {
+            color: #3498db;
+        }
+
+        .variable-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: white;
+            border: 1px solid #e1e1e1;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .variable-item:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .variable-item .variable-name {
+            flex: 1;
+        }
+
+        .variable-item .variable-syntax {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            font-family: monospace;
+        }
+
+        .variable-item:hover .variable-syntax {
+            color: #fff;
+        }
+
+        .search-variables {
+            margin-bottom: 20px;
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-variables:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        /* Luôn hiển thị toolbar */
+        .tox-editor-header {
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 100 !important;
+        }
+
+        .tox .tox-toolbar__primary {
+            background: none !important;
+            border: none !important;
+            display: flex !important;
+            flex-wrap: wrap !important;
+            justify-content: flex-start !important;
+            visibility: visible !important;
+            width: 100% !important;
+            position: relative !important;
+            transform: none !important;
+        }
+
+        .tox .tox-toolbar__group {
+            visibility: visible !important;
+            opacity: 1 !important;
+            display: flex !important;
+            position: relative !important;
+            transform: none !important;
+            padding: 0 4px !important;
+        }
+
+        /* Ẩn nút toggle toolbar */
+        .tox-toolbar__overflow {
+            display: none !important;
+        }
+
+        /* Đảm bảo toolbar không bị ẩn khi scroll */
+        .tox.tox-tinymce--toolbar-sticky-on .tox-editor-header {
+            position: sticky !important;
+        }
+
+        /* VS Code-like syntax highlighting */
+        #html-output {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            padding: 15px 15px 15px 60px;
+            height: 100%;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            tab-size: 2;
+            -moz-tab-size: 2;
+            outline: none;
+            counter-reset: line;
+        }
+
+        .line {
+            position: relative;
+            min-height: 1.5em;
+        }
+
+        .line:before {
+            content: counter(line);
+            counter-increment: line;
+            position: absolute;
+            left: -45px;
+            color: #858585;
+            text-align: right;
+            width: 35px;
+        }
+
+        /* Syntax highlighting colors */
+        .tag-brackets { color: #808080; }
+        .tag-slash { color: #808080; }
+        .tag-name { color: #569cd6; }
+        .attr-name { color: #9cdcfe; }
+        .attr-equals { color: #d4d4d4; }
+        .attr-value { color: #ce9178; }
+        .variable { color: #4ec9b0; }
+        .comment { 
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        /* Ensure proper spacing */
+        .line > * {
+            display: inline-block;
+        }
+
+        /* Fix white-space handling */
+        #html-output[contenteditable="true"] {
+            white-space: pre-wrap !important;
+        }
+
+        .btn-wrap {
+            background: #2196F3;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-wrap:hover {
+            background: #1976D2;
+        }
+
+        /* Thêm class mới cho trạng thái unwrap */
+        #html-output.nowrap {
+            white-space: pre !important;
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        /* Xóa bỏ scroll cho từng dòng */
+        #html-output.nowrap .line {
+            white-space: inherit;
+        }
+
+        .btn-format {
+            background: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-format:hover {
+            background: #45a049;
+        }
+
+        .btn-minify {
+            background: #FF9800;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-minify:hover {
+            background: #F57C00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="editor-panel">
+            <div class="panel-header">Visual Editor</div>
+            <textarea id="editor"></textarea>
+        </div>
+        
+        <div class="html-preview">
+            <div class="panel-header">
+                HTML Code
+                <div>
+                    <button class="btn btn-format" onclick="formatCode()">
+                        <i class="fas fa-code"></i> Format
+                    </button>
+
+                    <button class="btn btn-wrap" onclick="toggleWrap()">
+                        <i class="fas fa-wrap-text"></i> Toggle Wrap
+                    </button>
+                </div>
+            </div>
+            <div id="html-output" contenteditable="true" spellcheck="false"></div>
+        </div>
+    </div>
+
+    <div id="variableModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-code"></i> Variables</h2>
+                <span class="modal-close" onclick="closeVariableModal()"><i class="fas fa-times"></i></span>
+            </div>
+            
+            <input type="text" class="search-variables" placeholder="Tìm kiếm biến..." onkeyup="searchVariables(this.value)">
+            
+            <div class="variable-categories">
+                <!-- System Variables -->
+                <div class="variable-category">
+                    <div class="category-title">
+                        <i class="fas fa-cogs"></i>
+                        System Variables
+                    </div>
+                    <div class="variable-item" onclick="insertVariable('${domain}')">
+                        <span class="variable-name">Domain</span>
+                        <span class="variable-syntax">${domain}</span>
+                    </div>
+                    <div class="variable-item" onclick="insertVariable('${timeString}')">
+                        <span class="variable-name">Time</span>
+                        <span class="variable-syntax">${timeString}</span>
+                    </div>
+                    <div class="variable-item" onclick="insertVariable('${dateString}')">
+                        <span class="variable-name">Date</span>
+                        <span class="variable-syntax">${dateString}</span>
+                    </div>
+                </div>
+
+                <!-- User Information -->
+                <div class="variable-category">
+                    <div class="category-title">
+                        <i class="fas fa-user"></i>
+                        User Information
+                    </div>
+                    <div class="variable-item" onclick="insertVariable('${email}')">
+                        <span class="variable-name">Email</span>
+                        <span class="variable-syntax">${email}</span>
+                    </div>
+                    <div class="variable-item" onclick="insertVariable('${phoneNumber}')">
+                        <span class="variable-name">Phone Number</span>
+                        <span class="variable-syntax">${phoneNumber}</span>
+                    </div>
+                    <div class="variable-item" onclick="insertVariable('${maKhachHang}')">
+                        <span class="variable-name">Customer ID</span>
+                        <span class="variable-syntax">${maKhachHang}</span>
+                    </div>
+                </div>
+
+                <!-- API Data -->
+                <div class="variable-category">
+                    <div class="category-title">
+                        <i class="fas fa-database"></i>
+                        API Data
+                    </div>
+                    <div class="variable-item" onclick="insertVariable('${apiResult}')">
+                        <span class="variable-name">API Result</span>
+                        <span class="variable-syntax">${apiResult}</span>
+                    </div>
+                    <div class="variable-item" onclick="insertVariable('${serviceEmail}')">
+                        <span class="variable-name">Service Email</span>
+                        <span class="variable-syntax">${serviceEmail}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isUpdating = false;
+
+        tinymce.init({
+            selector: '#editor',
+            promotion: false,
+            plugins: [
+                'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 
+                'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 
+                'wordcount', 'checklist', 'mediaembed', 'casechange', 'export', 
+                'formatpainter', 'pageembed', 'advtable', 'advcode', 'editimage', 
+                'advtemplate', 'mentions', 'tableofcontents', 'inlinecss'
+            ],
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | ' +
+                    'link image media table | align lineheight | checklist numlist bullist indent outdent | ' +
+                    'emoticons charmap | removeformat | insertvariable',
+            height: '100%',
+            setup: function(editor) {
+                editor.on('change', function() {
+                    if (!isUpdating) {
+                        updateHtmlPreview(editor);
+                    }
+                });
+
+                editor.ui.registry.addButton('insertvariable', {
+                    text: '',
+                    icon: 'code',
+                    onAction: function() {
+                        openInsertVariableModal();
+                    }
+                });
+            },
+            toolbar_sticky: true,
+            toolbar_mode: 'wrap',
+            toolbar_sticky_offset: 0,
+            toolbar_location: 'top',
+        });
+
+        const htmlOutput = document.getElementById('html-output');
+
+        // Cập nhật từ TinyMCE sang HTML Preview
+        function updateHtmlPreview(editor) {
+            isUpdating = true;
+            try {
+                const content = editor.getContent();
+                const formattedHtml = formatHtml(content);
+                
+                // Highlight syntax với cách xử lý tốt hơn
+                const highlightedHtml = formattedHtml
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    // Highlight HTML tags với attributes
+                    .replace(/&lt;(\/?)([\w\-]+)([^&]*?)&gt;/g, function(match, slash, tag, attrs) {
+                        let highlighted = '<span class="tag-brackets">&lt;</span>';
+                        if (slash) highlighted += '<span class="tag-slash">/</span>';
+                        highlighted += `<span class="tag-name">${tag}</span>`;
+                        
+                        // Highlight attributes
+                        if (attrs) {
+                            highlighted += attrs.replace(/(\s+)([\w\-:]+)(\s*=\s*)("[^"]*"|'[^']*')/g, 
+                                '$1<span class="attr-name">$2</span>' +
+                                '<span class="attr-equals">$3</span>' +
+                                '<span class="attr-value">$4</span>'
+                            );
+                        }
+                        
+                        highlighted += '<span class="tag-brackets">&gt;</span>';
+                        return highlighted;
+                    })
+                    // Highlight variables ${...}
+                    .replace(/(\${[^}]+})/g, '<span class="variable">$1</span>')
+                    // Highlight comments
+                    .replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="comment">$1</span>');
+
+                // Split into lines and add line numbers
+                const lines = highlightedHtml.split('\n');
+                const numberedHtml = lines.map(line => 
+                    `<div class="line">${line || '&nbsp;'}</div>`
+                ).join('');
+
+                document.getElementById('html-output').innerHTML = numberedHtml;
+            } finally {
+                isUpdating = false;
+            }
+        }
+
+        // Thêm event listener cho html-output
+        document.getElementById('html-output').addEventListener('input', function() {
+            if (!isUpdating) {
+                isUpdating = true;
+                try {
+                    const html = this.innerText; // Sử dụng innerText thay vì value
+                    tinymce.activeEditor.setContent(html);
+                } catch (error) {
+                    console.error('Invalid HTML:', error);
+                } finally {
+                    isUpdating = false;
+                }
+            }
+        });
+
+        // Format HTML
+        function formatHtml(html) {
+            // Decode HTML entities first
+            html = decodeHtmlEntities(html);
+            
+            let formatted = '';
+            let indent = 0;
+            const tab = '    '; // 4 spaces
+            
+            // Định nghĩa các thẻ
+            const inlineTags = ['strong', 'a', 'span', 'em', 'b', 'i', 'u'];
+            
+            // Split into tags and text
+            const tokens = html.split(/(<\/?[^>]+>)/g);
+            
+            for (let i = 0; i < tokens.length; i++) {
+                let token = tokens[i];
+                if (!token) continue;
+                token = token.trim();
+                
+                // Kiểm tra loại thẻ
+                const tagMatch = token.match(/<\/?([^\s>]+)/);
+                const isInlineTag = tagMatch && inlineTags.includes(tagMatch[1].toLowerCase());
+                
+                // Closing tag
+                if (token.startsWith('</')) {
+                    if (!isInlineTag) {
+                        indent = Math.max(0, indent - 1);
+                        formatted += '\n' + tab.repeat(indent);
+                    }
+                    formatted += token;
+                }
+                // Opening tag
+                else if (token.startsWith('<')) {
+                    if (!isInlineTag) {
+                        formatted += '\n' + tab.repeat(indent);
+                    }
+                    formatted += token;
+                    
+                    // Tăng indent cho thẻ mở không phải inline và không phải self-closing
+                    if (!isInlineTag && !token.match(/<(br|hr|img|input|link|meta)\s*[^>]*>/)) {
+                        indent++;
+                    }
+                }
+                // Text content
+                else {
+                    // Nếu text content đứng một mình (không nằm giữa các thẻ inline)
+                    const prevToken = tokens[i-1] || '';
+                    const nextToken = tokens[i+1] || '';
+                    const isPrevInline = prevToken.match(/<([^\s>]+)/) && inlineTags.includes(prevToken.match(/<([^\s>]+)/)[1].toLowerCase());
+                    const isNextInline = nextToken.match(/<([^\s>]+)/) && inlineTags.includes(nextToken.match(/<([^\s>]+)/)[1].toLowerCase());
+                    
+                    if (!isPrevInline && !isNextInline) {
+                        formatted += '\n' + tab.repeat(indent);
+                    }
+                    formatted += token.trim();
+                }
+            }
+            
+            // Clean up
+            return formatted
+                .trim()
+                .replace(/\n\s*\n+/g, '\n')
+                .split('\n')
+                .map(line => line.trimRight())
+                .join('\n');
+        }
+
+        // Hàm decode HTML entities
+        function decodeHtmlEntities(text) {
+            const textarea = document.createElement('textarea');
+            textarea.innerHTML = text;
+            return textarea.value;
+        }
+
+        // Xử lý sự kiện paste
+        htmlOutput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const text = e.clipboardData.getData('text');
+            
+            isUpdating = true;
+            try {
+                // Format và highlight HTML code
+                const formattedHtml = formatHtml(text);
+                const highlightedHtml = formattedHtml
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/&lt;(\/?)([\w\-]+)([^&]*?)&gt;/g, function(match, slash, tag, attrs) {
+                        let highlighted = '<span class="tag-brackets">&lt;</span>';
+                        if (slash) highlighted += '<span class="tag-slash">/</span>';
+                        highlighted += `<span class="tag-name">${tag}</span>`;
+                        
+                        if (attrs) {
+                            highlighted += attrs.replace(/(\s+)([\w\-:]+)(\s*=\s*)("[^"]*"|'[^']*')/g, 
+                                '$1<span class="attr-name">$2</span>' +
+                                '<span class="attr-equals">$3</span>' +
+                                '<span class="attr-value">$4</span>'
+                            );
+                        }
+                        
+                        highlighted += '<span class="tag-brackets">&gt;</span>';
+                        return highlighted;
+                    })
+                    .replace(/(\${[^}]+})/g, '<span class="variable">$1</span>')
+                    .replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="comment">$1</span>');
+
+                // Split into lines and add line numbers
+                const lines = highlightedHtml.split('\n');
+                const numberedHtml = lines.map(line => 
+                    `<div class="line">${line || '&nbsp;'}</div>`
+                ).join('');
+
+                // Cập nhật HTML Preview
+                this.innerHTML = numberedHtml;
+                
+                // Cập nhật Visual Editor
+                tinymce.activeEditor.setContent(text);
+            } catch (error) {
+                console.error('Error processing paste:', error);
+            } finally {
+                isUpdating = false;
+            }
+        });
+
+        function saveNote() {
+            // Implement save functionality
+            console.log('Saving note...');
+        }
+
+        function closeNote() {
+            // Implement close functionality
+            console.log('Closing note...');
+        }
+
+        function openInsertVariableModal() {
+            document.getElementById('variableModal').style.display = 'block';
+            document.querySelector('.search-variables').focus();
+        }
+
+        function insertVariable(variable) {
+            tinymce.activeEditor.insertContent(variable);
+            document.getElementById('variableModal').style.display = 'none';
+        }
+
+        // Đóng modal khi click bên ngoài
+        window.onclick = function(event) {
+            const modal = document.getElementById('variableModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function searchVariables(query) {
+            query = query.toLowerCase();
+            const items = document.querySelectorAll('.variable-item');
+            
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function closeVariableModal() {
+            document.getElementById('variableModal').style.display = 'none';
+        }
+
+        function toggleWrap() {
+            const htmlOutput = document.getElementById('html-output');
+            htmlOutput.classList.toggle('nowrap');
+            
+            // Cập nhật text của button
+            const button = document.querySelector('.btn-wrap');
+            if (htmlOutput.classList.contains('nowrap')) {
+                button.innerHTML = '<i class="fas fa-wrap-text"></i> Enable Wrap';
+            } else {
+                button.innerHTML = '<i class="fas fa-wrap-text"></i> Disable Wrap';
+            }
+        }
+
+        function formatCode() {
+            const editor = tinymce.activeEditor;
+            const content = editor.getContent();
+            
+            // Format HTML
+            const formattedHtml = formatHtml(content);
+            
+            // Cập nhật cả hai editor
+            editor.setContent(formattedHtml);
+            updateHtmlPreview(editor);
+        }
+
+
+    </script>
+</body>
+</html>
