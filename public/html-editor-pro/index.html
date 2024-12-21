@@ -559,8 +559,8 @@
 
         // Format HTML
         function formatHtml(html) {
-            // Decode HTML entities first
-            html = decodeHtmlEntities(html);
+            // Không decode HTML entities nữa
+            // Bỏ dòng: html = decodeHtmlEntities(html);
             
             let formatted = '';
             let indent = 0;
@@ -569,19 +569,22 @@
             // Định nghĩa các thẻ
             const inlineTags = ['strong', 'a', 'span', 'em', 'b', 'i', 'u'];
             
-            // Split into tags and text
-            const tokens = html.split(/(<\/?[^>]+>)/g);
+            // Split into tags and text, nhưng bảo toàn HTML entities
+            const tokens = html.split(/(<[^>]+>)/g);
             
             for (let i = 0; i < tokens.length; i++) {
                 let token = tokens[i];
                 if (!token) continue;
-                token = token.trim();
                 
-                // Kiểm tra loại thẻ
+                // Chỉ trim khi token không phải là HTML entity
+                if (!token.includes('&')) {
+                    token = token.trim();
+                }
+                
+                // Còn lại giữ nguyên logic cũ
                 const tagMatch = token.match(/<\/?([^\s>]+)/);
                 const isInlineTag = tagMatch && inlineTags.includes(tagMatch[1].toLowerCase());
                 
-                // Closing tag
                 if (token.startsWith('</')) {
                     if (!isInlineTag) {
                         indent = Math.max(0, indent - 1);
@@ -603,7 +606,6 @@
                 }
                 // Text content
                 else {
-                    // Nếu text content đứng một mình (không nằm giữa các thẻ inline)
                     const prevToken = tokens[i-1] || '';
                     const nextToken = tokens[i+1] || '';
                     const isPrevInline = prevToken.match(/<([^\s>]+)/) && inlineTags.includes(prevToken.match(/<([^\s>]+)/)[1].toLowerCase());
@@ -612,20 +614,20 @@
                     if (!isPrevInline && !isNextInline) {
                         formatted += '\n' + tab.repeat(indent);
                     }
-                    formatted += token.trim();
+                    // Không trim() nếu token chứa HTML entities
+                    formatted += token.includes('&') ? token : token.trim();
                 }
             }
             
-            // Clean up
             return formatted
                 .trim()
                 .replace(/\n\s*\n+/g, '\n')
                 .split('\n')
-                .map(line => line.trimRight())
+                .map(line => line.includes('&') ? line : line.trimRight())
                 .join('\n');
         }
 
-        // Hàm decode HTML entities
+        // Có thể xóa hoặc không sử dụng hàm này nữa
         function decodeHtmlEntities(text) {
             const textarea = document.createElement('textarea');
             textarea.innerHTML = text;
