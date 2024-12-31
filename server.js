@@ -188,6 +188,11 @@ app.get('/ms365-file', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/ms365-file/index.html'));
 });
 
+app.get('/onedrive-access', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/onedrive-access/index.html'));
+});
+
+
 app.get('/mbws', (req, res) => {
     res.status(400).send("Please provide a domain in the URL path.");
 });
